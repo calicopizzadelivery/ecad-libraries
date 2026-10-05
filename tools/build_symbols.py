@@ -176,6 +176,9 @@ KEYWORDS = {
     "2N7002DW": "Diodes dual N-channel MOSFET SOT-363 level shifter",
     "Jetson_Nano_SODIMM": "NVIDIA Jetson Nano module SO-DIMM 260 socket",
     "USB3_A_Stacked2": "USB 3.0 receptacle double stacked SuperSpeed",
+    "NTTFS4C25N": "onsemi N-channel MOSFET 30V u8FL WDFN8 buck",
+    "NTTFS4C06N": "onsemi N-channel MOSFET 30V u8FL WDFN8 buck",
+    "STL6P3LLH6": "ST P-channel MOSFET 30V PowerFLAT pass switch",
 }
 
 
@@ -570,9 +573,49 @@ def usb3_a_stacked():
                         value_hint="USB-A PORT1")
 
 
+def dfn8_fet(name, descr, datasheet, footprint, p_channel=False):
+    """An 8-pad 3.3 x 3.3 power MOSFET as a box: gate on the left (pad 4), the four drain pads
+    stacked on one pin, the three source pads on another, only the lowest-numbered pad of each
+    stack visible (KLC S4.3). N-channel: drain on top, source below, as a switch to ground or a
+    buck stage reads. P-channel: source on top, drain below, as a high-side pass switch reads."""
+    top, bot = (("S", ("1", "2", "3")), ("D", ("5", "6", "7", "8"))) if p_channel else (("D", ("5", "6", "7", "8")), ("S", ("1", "2", "3")))
+    pins = [_pin(I, "4", "G", -7.62, 0, 0)]
+    for i, n in enumerate(top[1]):
+        pins.append(_pin(P, n, top[0], 0, 7.62, 270, hide=i > 0))
+    for i, n in enumerate(bot[1]):
+        pins.append(_pin(P, n, bot[0], 0, -7.62, 90, hide=i > 0))
+    body = [Sym("symbol"), f"{name}_0_1",
+            [Sym("rectangle"), [Sym("start"), -5.08, 5.08], [Sym("end"), 5.08, -5.08],
+             [Sym("stroke"), [Sym("width"), 0.254], [Sym("type"), Sym("default")]], [Sym("fill"), [Sym("type"), Sym("background")]]]]
+    unit = [Sym("symbol"), f"{name}_1_1"] + pins
+    return [Sym("symbol"), name, [Sym("pin_names"), [Sym("offset"), 0.508]], [Sym("exclude_from_sim"), Sym("no")],
+            [Sym("in_bom"), Sym("yes")], [Sym("on_board"), Sym("yes")],
+            _prop("Reference", "Q", (6.35, 1.27), justify="left"), _prop("Value", name, (6.35, -1.27), justify="left"),
+            _prop("Footprint", footprint, (0, 0), hide=True), _prop("Datasheet", datasheet, (0, 0), hide=True),
+            _prop("Description", descr, (0, 0), hide=True),
+            _prop("ki_keywords", KEYWORDS[name], (0, 0), hide=True), _prop("ki_fp_filters", fp_filter(footprint), (0, 0), hide=True),
+            body, unit, [Sym("embedded_fonts"), Sym("no")]]
+
+
+def nttfs4c25n():
+    return dfn8_fet("NTTFS4C25N", "N-channel 30 V 11.5 A MOSFET, WDFN8 3.3x3.3 (u8FL). Pads from the NTTFS4C25N datasheet pin assignment: S 1-3, G 4, D 5-8 and the exposed pad. NVIDIA P3509 Q4/Q6, the buck high-side switch.",
+                    "https://www.onsemi.com/pdf/datasheet/nttfs4c25n-d.pdf", "calico:onsemi_WDFN8-1EP_3.3x3.3mm_P0.65mm")
+
+
+def nttfs4c06n():
+    return dfn8_fet("NTTFS4C06N", "N-channel 30 V 19 A MOSFET, WDFN8 3.3x3.3 (u8FL). Pads from the NTTFS4C06N datasheet pin assignment: S 1-3, G 4, D 5-8 and the exposed pad. NVIDIA P3509 Q5/Q7, the buck low-side switch.",
+                    "https://www.onsemi.com/pdf/datasheet/nttfs4c06n-d.pdf", "calico:onsemi_WDFN8-1EP_3.3x3.3mm_P0.65mm")
+
+
+def stl6p3llh6():
+    return dfn8_fet("STL6P3LLH6", "P-channel 30 V 6 A STripFET H6 MOSFET, PowerFLAT 3.3x3.3. Pads from the STL6P3LLH6 datasheet (S 1-3, G 4, D 5-8 and the exposed pad); drawn source up, drain down, as a high-side pass switch. ST EVAL-SCS006V1 T1, the USB-C PD sink's VBUS switch.",
+                    "https://www.st.com/resource/en/datasheet/stl6p3llh6.pdf", "calico:ST_PowerFLAT-8_3.3x3.3mm_P0.65mm", p_channel=True)
+
+
 LIBRARIES = {
     "calico-ic": [k64, usb2517, tps2553, pca9517a, tps54560,
-                  efm8, gs7116, mp2152, tps53015, stusb4531, ncp301, cyusb3304, ap22811, apl3552, gs7616, tpd4e02b04, nmos_dual_2n7002dw],
+                  efm8, gs7116, mp2152, tps53015, stusb4531, ncp301, cyusb3304, ap22811, apl3552, gs7616, tpd4e02b04, nmos_dual_2n7002dw,
+                  nttfs4c25n, nttfs4c06n, stl6p3llh6],
     "calico-electromechanical": [usb_a_stacked, jw1fsn, jetson_nano_sodimm, usb3_a_stacked],
 }
 

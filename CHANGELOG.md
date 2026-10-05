@@ -8,7 +8,8 @@ The Jetson Nano carrier's (mythtv-porg) symbols, from its project library:
   NCP301LSN20T1, CYUSB3304, AP22811, APL3552, GS7616SC, TPD4E02B04DQA (drawn
   flow-through, one end of each channel per side, which KiCad's own symbol
   cannot do), 2N7002DW (two units, each a pass element: source left, drain
-  right, gate on top).
+  right, gate on top), NTTFS4C25N, NTTFS4C06N and STL6P3LLH6 (8-pad 3.3x3.3
+  power MOSFETs as boxes with their pad stacks, on the house footprints).
 - calico-electromechanical: Jetson_Nano_SODIMM (five units, 261 pins, names
   from the Product Design Guide), USB3_A_Stacked2 (two units, one per port,
   Molex 48406-0001 numbering).
