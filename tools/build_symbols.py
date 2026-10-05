@@ -557,10 +557,10 @@ def usb3_a_stacked():
     def port(base):
         # the four SuperSpeed lines on consecutive rows, so a 4-channel flow-through ESD array sits
         # on them; two rows between them and the USB 2.0 pair, so a 2-channel array on that pair
-        # clears the 4-channel one's body
+        # clears the 4-channel one's body; four rows above VBUS, so its rail symbol stands clear of SSTX+
         return dict(left=[(str(base + 2), "D-", B), (str(base + 3), "D+", B), None, None,
                           (str(base + 5), "SSRX-", I), (str(base + 6), "SSRX+", I),
-                          (str(base + 8), "SSTX-", O), (str(base + 9), "SSTX+", O), None, None,
+                          (str(base + 8), "SSTX-", O), (str(base + 9), "SSTX+", O), None, None, None, None,
                           (str(base + 1), "VBUS", PI), (str(base + 4), "GND", PI), (str(base + 7), "GND_DRAIN", PI)], width=20.32)
     units = [port(0), port(9)]
     units[0]["bottom"] = [("SH", "SHIELD", P)]

@@ -5336,7 +5336,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "J"
-			(at -10.16 19.05 0)
+			(at -10.16 21.59 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5347,7 +5347,7 @@
 			)
 		)
 		(property "Value" "USB3_A_Stacked2"
-			(at 10.16 19.05 0)
+			(at 10.16 21.59 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5414,8 +5414,8 @@
 		)
 		(symbol "USB3_A_Stacked2_1_1"
 			(rectangle
-				(start -10.16 17.78)
-				(end 10.16 -25.4)
+				(start -10.16 20.32)
+				(end 10.16 -27.94)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -5425,7 +5425,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -12.7 15.24 0)
+				(at -12.7 17.78 0)
 				(length 2.54)
 				(name "D-"
 					(effects
@@ -5443,7 +5443,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -12.7 12.7 0)
+				(at -12.7 15.24 0)
 				(length 2.54)
 				(name "D+"
 					(effects
@@ -5461,7 +5461,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 5.08 0)
+				(at -12.7 7.62 0)
 				(length 2.54)
 				(name "SSRX-"
 					(effects
@@ -5479,7 +5479,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 2.54 0)
+				(at -12.7 5.08 0)
 				(length 2.54)
 				(name "SSRX+"
 					(effects
@@ -5497,7 +5497,7 @@
 				)
 			)
 			(pin output line
-				(at -12.7 0 0)
+				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "SSTX-"
 					(effects
@@ -5515,7 +5515,7 @@
 				)
 			)
 			(pin output line
-				(at -12.7 -2.54 0)
+				(at -12.7 0 0)
 				(length 2.54)
 				(name "SSTX+"
 					(effects
@@ -5533,7 +5533,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -10.16 0)
+				(at -12.7 -12.7 0)
 				(length 2.54)
 				(name "VBUS"
 					(effects
@@ -5551,7 +5551,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -12.7 0)
+				(at -12.7 -15.24 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -5569,7 +5569,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -15.24 0)
+				(at -12.7 -17.78 0)
 				(length 2.54)
 				(name "GND_DRAIN"
 					(effects
@@ -5587,7 +5587,7 @@
 				)
 			)
 			(pin passive line
-				(at 0 -27.94 90)
+				(at 0 -30.48 90)
 				(length 2.54)
 				(name "SHIELD"
 					(effects
@@ -5607,8 +5607,8 @@
 		)
 		(symbol "USB3_A_Stacked2_2_1"
 			(rectangle
-				(start -10.16 17.78)
-				(end 10.16 -17.78)
+				(start -10.16 20.32)
+				(end 10.16 -20.32)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -5618,7 +5618,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -12.7 15.24 0)
+				(at -12.7 17.78 0)
 				(length 2.54)
 				(name "D-"
 					(effects
@@ -5636,7 +5636,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -12.7 12.7 0)
+				(at -12.7 15.24 0)
 				(length 2.54)
 				(name "D+"
 					(effects
@@ -5654,7 +5654,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 5.08 0)
+				(at -12.7 7.62 0)
 				(length 2.54)
 				(name "SSRX-"
 					(effects
@@ -5672,7 +5672,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 2.54 0)
+				(at -12.7 5.08 0)
 				(length 2.54)
 				(name "SSRX+"
 					(effects
@@ -5690,7 +5690,7 @@
 				)
 			)
 			(pin output line
-				(at -12.7 0 0)
+				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "SSTX-"
 					(effects
@@ -5708,7 +5708,7 @@
 				)
 			)
 			(pin output line
-				(at -12.7 -2.54 0)
+				(at -12.7 0 0)
 				(length 2.54)
 				(name "SSTX+"
 					(effects
@@ -5726,7 +5726,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -10.16 0)
+				(at -12.7 -12.7 0)
 				(length 2.54)
 				(name "VBUS"
 					(effects
@@ -5744,7 +5744,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -12.7 0)
+				(at -12.7 -15.24 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -5762,7 +5762,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -15.24 0)
+				(at -12.7 -17.78 0)
 				(length 2.54)
 				(name "GND_DRAIN"
 					(effects
