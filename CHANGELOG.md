@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 (2026-10-05)
+
+- USB2517: two gap rows between the upstream pair and VBUS_DET, so the
+  VBUS_DET lane clears the upstream connector's D+ rows when the ESD array
+  sits on the pair.
+
 ## 0.2.0 (2026-10-05)
 
 - MK64FN1M0VLL12, USB2517: every USB pair is ordered D- above D+, the order

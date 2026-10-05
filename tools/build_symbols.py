@@ -179,7 +179,7 @@ def k64():
 
 
 def usb2517():
-    left = [("58", "USBUP_DM", B), ("59", "USBUP_DP", B), ("44", "VBUS_DET", I), None,     # pairs D- above D+, as on a USBLC6 array
+    left = [("58", "USBUP_DM", B), ("59", "USBUP_DP", B), None, None, ("44", "VBUS_DET", I), None,     # pairs D- above D+, as on a USBLC6 array; VBUS_DET two rows clear of the upstream connector's D+ rows
             ("61", "XTAL1/CLKIN", I), ("60", "XTAL2", O), ("43", "RESET_N", I), ("63", "RBIAS", P), ("19", "TEST", I), None,
             ("13", "CFG_SEL2", I), ("42", "HS_IND/CFG_SEL1", B), ("41", "SCL/SMBCLK/CFG_SEL0", B), ("40", "SDA/SMBDATA/NON_REM1", B),
             ("45", "SUSP_IND/LOCAL_PWR/NON_REM0", B)]

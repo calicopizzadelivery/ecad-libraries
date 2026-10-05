@@ -2038,7 +2038,7 @@
 				)
 			)
 			(pin input line
-				(at -38.1 53.34 0)
+				(at -38.1 48.26 0)
 				(length 2.54)
 				(name "VBUS_DET"
 					(effects
@@ -2056,7 +2056,7 @@
 				)
 			)
 			(pin input line
-				(at -38.1 48.26 0)
+				(at -38.1 43.18 0)
 				(length 2.54)
 				(name "XTAL1/CLKIN"
 					(effects
@@ -2074,7 +2074,7 @@
 				)
 			)
 			(pin output line
-				(at -38.1 45.72 0)
+				(at -38.1 40.64 0)
 				(length 2.54)
 				(name "XTAL2"
 					(effects
@@ -2092,7 +2092,7 @@
 				)
 			)
 			(pin input line
-				(at -38.1 43.18 0)
+				(at -38.1 38.1 0)
 				(length 2.54)
 				(name "RESET_N"
 					(effects
@@ -2110,7 +2110,7 @@
 				)
 			)
 			(pin passive line
-				(at -38.1 40.64 0)
+				(at -38.1 35.56 0)
 				(length 2.54)
 				(name "RBIAS"
 					(effects
@@ -2128,7 +2128,7 @@
 				)
 			)
 			(pin input line
-				(at -38.1 38.1 0)
+				(at -38.1 33.02 0)
 				(length 2.54)
 				(name "TEST"
 					(effects
@@ -2146,7 +2146,7 @@
 				)
 			)
 			(pin input line
-				(at -38.1 33.02 0)
+				(at -38.1 27.94 0)
 				(length 2.54)
 				(name "CFG_SEL2"
 					(effects
@@ -2164,7 +2164,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -38.1 30.48 0)
+				(at -38.1 25.4 0)
 				(length 2.54)
 				(name "HS_IND/CFG_SEL1"
 					(effects
@@ -2182,7 +2182,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -38.1 27.94 0)
+				(at -38.1 22.86 0)
 				(length 2.54)
 				(name "SCL/SMBCLK/CFG_SEL0"
 					(effects
@@ -2200,7 +2200,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -38.1 25.4 0)
+				(at -38.1 20.32 0)
 				(length 2.54)
 				(name "SDA/SMBDATA/NON_REM1"
 					(effects
@@ -2218,7 +2218,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -38.1 22.86 0)
+				(at -38.1 17.78 0)
 				(length 2.54)
 				(name "SUSP_IND/LOCAL_PWR/NON_REM0"
 					(effects
