@@ -6092,44 +6092,8 @@
 					)
 				)
 			)
-			(pin input line
-				(at -33.02 -25.4 0)
-				(length 2.54)
-				(name "XTL_IN"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "55"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin output line
-				(at -33.02 -27.94 0)
-				(length 2.54)
-				(name "XTL_OUT"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "54"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
 			(pin passive line
-				(at -33.02 -33.02 0)
+				(at -33.02 -25.4 0)
 				(length 2.54)
 				(name "RREF_USB2"
 					(effects
@@ -6147,7 +6111,7 @@
 				)
 			)
 			(pin passive line
-				(at -33.02 -35.56 0)
+				(at -33.02 -27.94 0)
 				(length 2.54)
 				(name "RREF_SS"
 					(effects
@@ -6157,6 +6121,42 @@
 					)
 				)
 				(number "26"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -33.02 -33.02 0)
+				(length 2.54)
+				(name "XTL_IN"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "55"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at -33.02 -35.56 0)
+				(length 2.54)
+				(name "XTL_OUT"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "54"
 					(effects
 						(font
 							(size 1.27 1.27)

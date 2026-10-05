@@ -477,7 +477,8 @@ def cyusb3304():
             ("31", "RESETN", I), ("23", "MODE_SEL0", I), ("24", "MODE_SEL1", I), ("32", "I2C_CLK", B), ("33", "I2C_DATA", B), ("20", "SUSPEND", B), None,
             ("29", "PWR_EN", O), ("30", "OVRCURR", I), None,
             ("21", "RESERVED1", B), ("22", "RESERVED2", I), ("25", "NC", NC), None,
-            ("55", "XTL_IN", I), ("54", "XTL_OUT", O), None, ("2", "RREF_USB2", P), ("26", "RREF_SS", P)]
+            ("2", "RREF_USB2", P), ("26", "RREF_SS", P), None,
+            ("55", "XTL_IN", I), ("54", "XTL_OUT", O)]       # crystal pins last, so the clock source hangs below everything else on that side
     right = [("51", "DS1_RXP", I), ("50", "DS1_RXM", I), ("47", "DS1_TXP", O), ("48", "DS1_TXM", O), ("60", "DS1_DP", B), ("59", "DS1_DM", B), None,
              ("45", "DS2_RXP", I), ("44", "DS2_RXM", I), ("41", "DS2_TXP", O), ("42", "DS2_TXM", O), ("62", "DS2_DP", B), ("63", "DS2_DM", B), None,
              ("35", "DS3_RXP", I), ("36", "DS3_RXM", I), ("38", "DS3_TXP", O), ("39", "DS3_TXM", O), ("65", "DS3_DP", B), ("64", "DS3_DM", B), None,

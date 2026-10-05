@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 (2026-10-05)
+
+- CYUSB3304: the crystal pins move to the bottom of the left column, below
+  the RREF pins, so the clock source hangs below everything else on that
+  side (schematic-style: clock sources flow downward).
+
 ## 0.3.0 (2026-10-05)
 
 The Jetson Nano carrier's (mythtv-porg) symbols, from its project library:
