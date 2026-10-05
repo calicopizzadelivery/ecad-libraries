@@ -5415,7 +5415,7 @@
 		(symbol "USB3_A_Stacked2_1_1"
 			(rectangle
 				(start -10.16 17.78)
-				(end 10.16 -22.86)
+				(end 10.16 -25.4)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -5461,7 +5461,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 7.62 0)
+				(at -12.7 5.08 0)
 				(length 2.54)
 				(name "SSRX-"
 					(effects
@@ -5479,7 +5479,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 5.08 0)
+				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "SSRX+"
 					(effects
@@ -5533,7 +5533,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -7.62 0)
+				(at -12.7 -10.16 0)
 				(length 2.54)
 				(name "VBUS"
 					(effects
@@ -5551,7 +5551,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -10.16 0)
+				(at -12.7 -12.7 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -5569,7 +5569,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -12.7 0)
+				(at -12.7 -15.24 0)
 				(length 2.54)
 				(name "GND_DRAIN"
 					(effects
@@ -5587,7 +5587,7 @@
 				)
 			)
 			(pin passive line
-				(at 0 -25.4 90)
+				(at 0 -27.94 90)
 				(length 2.54)
 				(name "SHIELD"
 					(effects
@@ -5608,7 +5608,7 @@
 		(symbol "USB3_A_Stacked2_2_1"
 			(rectangle
 				(start -10.16 17.78)
-				(end 10.16 -15.24)
+				(end 10.16 -17.78)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -5654,7 +5654,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 7.62 0)
+				(at -12.7 5.08 0)
 				(length 2.54)
 				(name "SSRX-"
 					(effects
@@ -5672,7 +5672,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 5.08 0)
+				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "SSRX+"
 					(effects
@@ -5726,7 +5726,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -7.62 0)
+				(at -12.7 -10.16 0)
 				(length 2.54)
 				(name "VBUS"
 					(effects
@@ -5744,7 +5744,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -10.16 0)
+				(at -12.7 -12.7 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -5762,7 +5762,7 @@
 				)
 			)
 			(pin power_in line
-				(at -12.7 -12.7 0)
+				(at -12.7 -15.24 0)
 				(length 2.54)
 				(name "GND_DRAIN"
 					(effects

@@ -555,9 +555,12 @@ def usb3_a_stacked():
     and the grounds at the bottom. Pin numbers as KiCad's Connector:USB3_A_Stacked and the Molex
     48406-0001 footprint: 1-9 one port, 10-18 the other, in USB 3.0 Std-A order, SH the shell."""
     def port(base):
-        return dict(left=[(str(base + 2), "D-", B), (str(base + 3), "D+", B), None,
-                          (str(base + 5), "SSRX-", I), (str(base + 6), "SSRX+", I), None,
-                          (str(base + 8), "SSTX-", O), (str(base + 9), "SSTX+", O), None,
+        # the four SuperSpeed lines on consecutive rows, so a 4-channel flow-through ESD array sits
+        # on them; two rows between them and the USB 2.0 pair, so a 2-channel array on that pair
+        # clears the 4-channel one's body
+        return dict(left=[(str(base + 2), "D-", B), (str(base + 3), "D+", B), None, None,
+                          (str(base + 5), "SSRX-", I), (str(base + 6), "SSRX+", I),
+                          (str(base + 8), "SSTX-", O), (str(base + 9), "SSTX+", O), None, None,
                           (str(base + 1), "VBUS", PI), (str(base + 4), "GND", PI), (str(base + 7), "GND_DRAIN", PI)], width=20.32)
     units = [port(0), port(9)]
     units[0]["bottom"] = [("SH", "SHIELD", P)]
