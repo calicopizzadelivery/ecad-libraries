@@ -521,7 +521,7 @@ def tpd4e02b04():
         pins.append(_pin(P, b, f"IO{i + 1}", -7.62, y, 0))
         pins.append(_pin(P, a, f"IO{i + 1}", 7.62, y, 180))
     pins.append(_pin(PI, "3", "GND", 0, -7.62, 90, length=3.81))
-    pins.append(_pin(PI, "8", "GND", 0, -7.62, 90, length=3.81))
+    pins.append(_pin(PI, "8", "GND", 0, -7.62, 90, length=3.81, hide=True))      # stacked on pin 3 (KLC S4.3)
     fp = "Package_SON:USON-10_2.5x1.0mm_P0.5mm"
     # 1.27 mm above IO1 and below IO4: on a connector's 2.54 mm rows the neighbouring row clears the body
     body = [Sym("symbol"), f"{name}_0_1",
