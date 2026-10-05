@@ -108,8 +108,9 @@ def m2_socket_e():
     f.line((x0 + 0.5, yt), (x0, yt + 0.5), "F.Fab", 0.1)                                  # pin-1 corner chamfer
     f.rect((x0 - 0.5, yt - 0.7), (x1 + 0.5, yb + 0.5), "F.CrtYd", 0.05)
     # silkscreen: the housing ends and the rear edge, clear of the pad rows; pin 1 arrow outside the slot-side row
-    for sx in (-1, 1):
-        f.line((sx * 11.07, yt - 0.12), (sx * 11.07, yb + 0.12), "F.SilkS", 0.12)
+    for sx in (-1, 1):                                                              # ends broken around the solder pegs
+        f.line((sx * 11.07, yt - 0.12), (sx * 11.07, -1.6), "F.SilkS", 0.12)
+        f.line((sx * 11.07, 1.6), (sx * 11.07, yb + 0.12), "F.SilkS", 0.12)
         f.line((sx * 11.07, yb + 0.12), (sx * 9.6, yb + 0.12), "F.SilkS", 0.12)
     f.line((-11.07, yt - 0.12), (-10.6, yt - 0.12), "F.SilkS", 0.12)
     f.line((11.07, yt - 0.12), (10.6, yt - 0.12), "F.SilkS", 0.12)
