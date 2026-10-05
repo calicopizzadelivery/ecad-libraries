@@ -148,7 +148,7 @@ PI, PO, I, O, B, P, OC, NC = "power_in", "power_out", "input", "output", "bidire
 
 def k64():
     left = [("13", "VREGIN", PI), ("12", "VOUT33", PO), None,
-            ("10", "USB0_DP", B), ("11", "USB0_DM", B), None,
+            ("11", "USB0_DM", B), ("10", "USB0_DP", B), None,            # D- above D+, as on a USBLC6 array
             ("50", "EXTAL0/PTA18", I), ("51", "XTAL0/PTA19", P), ("29", "EXTAL32", P), ("28", "XTAL32", P), None,
             ("52", "RESET_b", I), ("38", "NMI_b/PTA4", I), None,
             ("14", "ADC0_DP1", I), ("15", "ADC0_DM1", I), ("16", "ADC1_DP1", I), ("17", "ADC1_DM1", I),
@@ -179,17 +179,17 @@ def k64():
 
 
 def usb2517():
-    left = [("59", "USBUP_DP", B), ("58", "USBUP_DM", B), ("44", "VBUS_DET", I), None,
+    left = [("58", "USBUP_DM", B), ("59", "USBUP_DP", B), ("44", "VBUS_DET", I), None,     # pairs D- above D+, as on a USBLC6 array
             ("61", "XTAL1/CLKIN", I), ("60", "XTAL2", O), ("43", "RESET_N", I), ("63", "RBIAS", P), ("19", "TEST", I), None,
             ("13", "CFG_SEL2", I), ("42", "HS_IND/CFG_SEL1", B), ("41", "SCL/SMBCLK/CFG_SEL0", B), ("40", "SDA/SMBDATA/NON_REM1", B),
             ("45", "SUSP_IND/LOCAL_PWR/NON_REM0", B)]
     top = [("46", "VDD33", PI), ("24", "VDD33CR", PI), ("64", "VDD33PLL", PI),
            ("5", "VDDA33", PI), ("10", "VDDA33", PI), ("52", "VDDA33", PI), ("57", "VDDA33", PI)]
     bottom = [("25", "VDD18", PO), ("62", "VDD18PLL", PO), ("65", "VSS/EP", PI)]
-    right = [("2", "USBDN1_DP", B), ("1", "USBDN1_DM", B), ("4", "USBDN2_DP", B), ("3", "USBDN2_DM", B),
-             ("7", "USBDN3_DP/PRT_DIS_P3", B), ("6", "USBDN3_DM/PRT_DIS_M3", B), ("9", "USBDN4_DP", B), ("8", "USBDN4_DM", B),
-             ("12", "USBDN5_DP", B), ("11", "USBDN5_DM", B), ("54", "USBDN6_DP", B), ("53", "USBDN6_DM", B),
-             ("56", "USBDN7_DP", B), ("55", "USBDN7_DM", B), None,
+    right = [("1", "USBDN1_DM", B), ("2", "USBDN1_DP", B), ("3", "USBDN2_DM", B), ("4", "USBDN2_DP", B),
+             ("6", "USBDN3_DM/PRT_DIS_M3", B), ("7", "USBDN3_DP/PRT_DIS_P3", B), ("8", "USBDN4_DM", B), ("9", "USBDN4_DP", B),
+             ("11", "USBDN5_DM", B), ("12", "USBDN5_DP", B), ("53", "USBDN6_DM", B), ("54", "USBDN6_DP", B),
+             ("55", "USBDN7_DM", B), ("56", "USBDN7_DP", B), None,
              ("29", "PRTPWR1", O), ("26", "PRTPWR2", O), ("23", "PRTPWR3", O), ("20", "PRTPWR4", O), ("30", "PRTPWR5", O), ("39", "PRTPWR6", O), ("36", "PRTPWR7", O), None,
              ("28", "OCS1_N", I), ("27", "OCS2_N", I), ("22", "OCS3_N", I), ("21", "OCS4_N", I), ("35", "OCS5_N", I), ("38", "OCS6_N", I), ("37", "OCS7_N", I), None,
              ("51", "LED_A1_N/PRT_SWP1", B), ("49", "LED_A2_N/PRT_SWP2", B), ("47", "LED_A3_N/PRT_SWP3", B), ("33", "LED_A4_N/PRT_SWP4", B),

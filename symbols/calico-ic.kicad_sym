@@ -139,14 +139,14 @@
 			(pin bidirectional line
 				(at -33.02 76.2 0)
 				(length 2.54)
-				(name "USB0_DP"
+				(name "USB0_DM"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "10"
+				(number "11"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -157,14 +157,14 @@
 			(pin bidirectional line
 				(at -33.02 73.66 0)
 				(length 2.54)
-				(name "USB0_DM"
+				(name "USB0_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "11"
+				(number "10"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2004,14 +2004,14 @@
 			(pin bidirectional line
 				(at -38.1 58.42 0)
 				(length 2.54)
-				(name "USBUP_DP"
+				(name "USBUP_DM"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "59"
+				(number "58"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2022,14 +2022,14 @@
 			(pin bidirectional line
 				(at -38.1 55.88 0)
 				(length 2.54)
-				(name "USBUP_DM"
+				(name "USBUP_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "58"
+				(number "59"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2238,24 +2238,6 @@
 			(pin bidirectional line
 				(at 38.1 58.42 180)
 				(length 2.54)
-				(name "USBDN1_DP"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin bidirectional line
-				(at 38.1 55.88 180)
-				(length 2.54)
 				(name "USBDN1_DM"
 					(effects
 						(font
@@ -2272,16 +2254,16 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 53.34 180)
+				(at 38.1 55.88 180)
 				(length 2.54)
-				(name "USBDN2_DP"
+				(name "USBDN1_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "4"
+				(number "2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2290,7 +2272,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 50.8 180)
+				(at 38.1 53.34 180)
 				(length 2.54)
 				(name "USBDN2_DM"
 					(effects
@@ -2308,16 +2290,16 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 48.26 180)
+				(at 38.1 50.8 180)
 				(length 2.54)
-				(name "USBDN3_DP/PRT_DIS_P3"
+				(name "USBDN2_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "7"
+				(number "4"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2326,7 +2308,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 45.72 180)
+				(at 38.1 48.26 180)
 				(length 2.54)
 				(name "USBDN3_DM/PRT_DIS_M3"
 					(effects
@@ -2344,16 +2326,16 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 43.18 180)
+				(at 38.1 45.72 180)
 				(length 2.54)
-				(name "USBDN4_DP"
+				(name "USBDN3_DP/PRT_DIS_P3"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "9"
+				(number "7"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2362,7 +2344,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 40.64 180)
+				(at 38.1 43.18 180)
 				(length 2.54)
 				(name "USBDN4_DM"
 					(effects
@@ -2380,16 +2362,16 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 38.1 180)
+				(at 38.1 40.64 180)
 				(length 2.54)
-				(name "USBDN5_DP"
+				(name "USBDN4_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "12"
+				(number "9"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2398,7 +2380,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 35.56 180)
+				(at 38.1 38.1 180)
 				(length 2.54)
 				(name "USBDN5_DM"
 					(effects
@@ -2416,16 +2398,16 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 33.02 180)
+				(at 38.1 35.56 180)
 				(length 2.54)
-				(name "USBDN6_DP"
+				(name "USBDN5_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "54"
+				(number "12"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2434,7 +2416,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 30.48 180)
+				(at 38.1 33.02 180)
 				(length 2.54)
 				(name "USBDN6_DM"
 					(effects
@@ -2452,16 +2434,34 @@
 				)
 			)
 			(pin bidirectional line
-				(at 38.1 27.94 180)
+				(at 38.1 30.48 180)
 				(length 2.54)
-				(name "USBDN7_DP"
+				(name "USBDN6_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "56"
+				(number "54"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 38.1 27.94 180)
+				(length 2.54)
+				(name "USBDN7_DM"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "55"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2472,14 +2472,14 @@
 			(pin bidirectional line
 				(at 38.1 25.4 180)
 				(length 2.54)
-				(name "USBDN7_DM"
+				(name "USBDN7_DP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "55"
+				(number "56"
 					(effects
 						(font
 							(size 1.27 1.27)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 (2026-10-05)
+
+- MK64FN1M0VLL12, USB2517: every USB pair is ordered D- above D+, the order
+  of the lines on a USBLC6-2SC6 array, so an array placed on the rows wires
+  straight. Pin positions within each pair swap.
+
 ## 0.1.2 (2026-10-05)
 
 - TPS2553DBV: a gap row between FAULT and OUT, so a label on the OUT row
