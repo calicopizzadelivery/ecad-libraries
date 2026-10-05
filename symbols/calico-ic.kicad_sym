@@ -2056,42 +2056,6 @@
 				)
 			)
 			(pin input line
-				(at -38.1 43.18 0)
-				(length 2.54)
-				(name "XTAL1/CLKIN"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "61"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin output line
-				(at -38.1 40.64 0)
-				(length 2.54)
-				(name "XTAL2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "60"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
 				(at -38.1 38.1 0)
 				(length 2.54)
 				(name "RESET_N"
@@ -2228,6 +2192,42 @@
 					)
 				)
 				(number "45"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -38.1 12.7 0)
+				(length 2.54)
+				(name "XTAL1/CLKIN"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "61"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at -38.1 10.16 0)
+				(length 2.54)
+				(name "XTAL2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "60"
 					(effects
 						(font
 							(size 1.27 1.27)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 (2026-10-05)
+
+- USB2517: the crystal pins move to the bottom of the left column so the
+  clock source hangs below the other lanes, and VBUS_DET gets clear rows on
+  both sides for the upstream connector's lower pins.
+
 ## 0.2.1 (2026-10-05)
 
 - USB2517: two gap rows between the upstream pair and VBUS_DET, so the

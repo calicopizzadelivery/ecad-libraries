@@ -179,10 +179,13 @@ def k64():
 
 
 def usb2517():
-    left = [("58", "USBUP_DM", B), ("59", "USBUP_DP", B), None, None, ("44", "VBUS_DET", I), None,     # pairs D- above D+, as on a USBLC6 array; VBUS_DET two rows clear of the upstream connector's D+ rows
-            ("61", "XTAL1/CLKIN", I), ("60", "XTAL2", O), ("43", "RESET_N", I), ("63", "RBIAS", P), ("19", "TEST", I), None,
+    # upstream pair D- above D+ (the order on a USBLC6 array), then VBUS_DET with clear rows
+    # around it so the upstream connector's lower pins have no hub lane on their rows; the
+    # crystal pins last, so the clock source hangs below everything else on that side
+    left = [("58", "USBUP_DM", B), ("59", "USBUP_DP", B), None, None, ("44", "VBUS_DET", I), None, None, None,
+            ("43", "RESET_N", I), ("63", "RBIAS", P), ("19", "TEST", I), None,
             ("13", "CFG_SEL2", I), ("42", "HS_IND/CFG_SEL1", B), ("41", "SCL/SMBCLK/CFG_SEL0", B), ("40", "SDA/SMBDATA/NON_REM1", B),
-            ("45", "SUSP_IND/LOCAL_PWR/NON_REM0", B)]
+            ("45", "SUSP_IND/LOCAL_PWR/NON_REM0", B), None, ("61", "XTAL1/CLKIN", I), ("60", "XTAL2", O)]
     top = [("46", "VDD33", PI), ("24", "VDD33CR", PI), ("64", "VDD33PLL", PI),
            ("5", "VDDA33", PI), ("10", "VDDA33", PI), ("52", "VDDA33", PI), ("57", "VDDA33", PI)]
     bottom = [("25", "VDD18", PO), ("62", "VDD18PLL", PO), ("65", "VSS/EP", PI)]
