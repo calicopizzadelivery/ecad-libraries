@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.0 (2026-10-05)
+
+The Jetson Nano carrier's (mythtv-porg) symbols, from its project library:
+
+- calico-ic: EFM8SB10F2G, GS7116S5-ADJ, MP2152, TPS53015, STUSB4531,
+  NCP301LSN20T1, CYUSB3304, AP22811, APL3552, GS7616SC, TPD4E02B04DQA (drawn
+  flow-through, one end of each channel per side, which KiCad's own symbol
+  cannot do), 2N7002DW (two units, each a pass element: source left, drain
+  right, gate on top).
+- calico-electromechanical: Jetson_Nano_SODIMM (five units, 261 pins, names
+  from the Product Design Guide), USB3_A_Stacked2 (two units, one per port,
+  Molex 48406-0001 numbering).
+- Builder: `units_symbol()` for multi-unit box symbols; no-connect pins are
+  hidden (KLC S4.6); `_pin()` takes a length for a pin that has to reach a
+  shallower body.
+
 ## 0.2.2 (2026-10-05)
 
 - USB2517: the crystal pins move to the bottom of the left column so the

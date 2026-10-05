@@ -175,6 +175,7 @@ KEYWORDS = {
     "TPD4E02B04DQA": "TI ESD protection array 4-channel HDMI USB3",
     "2N7002DW": "Diodes dual N-channel MOSFET SOT-363 level shifter",
     "Jetson_Nano_SODIMM": "NVIDIA Jetson Nano module SO-DIMM 260 socket",
+    "USB3_A_Stacked2": "USB 3.0 receptacle double stacked SuperSpeed",
 }
 
 
@@ -519,16 +520,17 @@ def tpd4e02b04():
         y = round(5.08 - i * 2.54, 4)
         pins.append(_pin(P, b, f"IO{i + 1}", -7.62, y, 0))
         pins.append(_pin(P, a, f"IO{i + 1}", 7.62, y, 180))
-    pins.append(_pin(PI, "3", "GND", 0, -7.62, 90))
-    pins.append(_pin(PI, "8", "GND", 0, -7.62, 90))
+    pins.append(_pin(PI, "3", "GND", 0, -7.62, 90, length=3.81))
+    pins.append(_pin(PI, "8", "GND", 0, -7.62, 90, length=3.81))
     fp = "Package_SON:USON-10_2.5x1.0mm_P0.5mm"
+    # 1.27 mm above IO1 and below IO4: on a connector's 2.54 mm rows the neighbouring row clears the body
     body = [Sym("symbol"), f"{name}_0_1",
-            [Sym("rectangle"), [Sym("start"), -5.08, 7.62], [Sym("end"), 5.08, -5.08],
+            [Sym("rectangle"), [Sym("start"), -5.08, 6.35], [Sym("end"), 5.08, -3.81],
              [Sym("stroke"), [Sym("width"), 0.254], [Sym("type"), Sym("default")]], [Sym("fill"), [Sym("type"), Sym("background")]]]]
     unit = [Sym("symbol"), f"{name}_1_1"] + pins
     return [Sym("symbol"), name, [Sym("pin_names"), [Sym("offset"), 0.508]], [Sym("exclude_from_sim"), Sym("no")],
             [Sym("in_bom"), Sym("yes")], [Sym("on_board"), Sym("yes")],
-            _prop("Reference", "D", (-5.08, 11.43), justify="left"), _prop("Value", name, (-5.08, 8.89), justify="left"),
+            _prop("Reference", "D", (-5.08, 10.16), justify="left"), _prop("Value", name, (-5.08, 7.62), justify="left"),
             _prop("Footprint", fp, (0, 0), hide=True),
             _prop("Datasheet", "https://www.ti.com/lit/ds/symlink/tpd4e02b04.pdf", (0, 0), hide=True),
             _prop("Description", "4-channel ESD array for HDMI / USB 3, 0.5 pF, USON-10 flow-through: pads 1/10, 2/9, 4/7, 5/6 are the two ends of one channel each, 3/8 GND (TPD4E02B04 datasheet pin functions, DQA package). NVIDIA P3449 D23/D24.", (0, 0), hide=True),
@@ -547,10 +549,28 @@ def nmos_dual_2n7002dw():
                         datasheet="https://www.diodes.com/assets/Datasheets/ds30896.pdf")
 
 
+def usb3_a_stacked():
+    """Double-stacked USB 3.0 Type-A receptacle as two units, one per port, each drawn as its own
+    connector facing the sheet edge: D-, D+ at the top, the SuperSpeed pairs in the middle, VBUS
+    and the grounds at the bottom. Pin numbers as KiCad's Connector:USB3_A_Stacked and the Molex
+    48406-0001 footprint: 1-9 one port, 10-18 the other, in USB 3.0 Std-A order, SH the shell."""
+    def port(base):
+        return dict(left=[(str(base + 2), "D-", B), (str(base + 3), "D+", B), None,
+                          (str(base + 5), "SSRX-", I), (str(base + 6), "SSRX+", I), None,
+                          (str(base + 8), "SSTX-", O), (str(base + 9), "SSTX+", O), None,
+                          (str(base + 1), "VBUS", PI), (str(base + 4), "GND", PI), (str(base + 7), "GND_DRAIN", PI)], width=20.32)
+    units = [port(0), port(9)]
+    units[0]["bottom"] = [("SH", "SHIELD", P)]
+    return units_symbol("USB3_A_Stacked2", units, ref="J", footprint="Connector_USB:USB3_A_Molex_48406-0001_Horizontal_Stacked",
+                        description="USB 3.0 Type-A receptacle, double stacked, one unit per port. Pin numbers from the Molex 48406-0001 sales drawing (circuit 1-9 lower port, 10-18 upper port, USB 3.0 Std-A contact order) as KiCad's Connector:USB3_A_Stacked carries them; VERIFY the port-to-pin assignment against the drawing before fab.",
+                        datasheet="https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/484/48406/484060001_sd.pdf",
+                        value_hint="USB-A PORT1")
+
+
 LIBRARIES = {
     "calico-ic": [k64, usb2517, tps2553, pca9517a, tps54560,
                   efm8, gs7116, mp2152, tps53015, stusb4531, ncp301, cyusb3304, ap22811, apl3552, gs7616, tpd4e02b04, nmos_dual_2n7002dw],
-    "calico-electromechanical": [usb_a_stacked, jw1fsn, jetson_nano_sodimm],
+    "calico-electromechanical": [usb_a_stacked, jw1fsn, jetson_nano_sodimm, usb3_a_stacked],
 }
 
 

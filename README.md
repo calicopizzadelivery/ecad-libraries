@@ -84,6 +84,9 @@ house decisions:
 - *Pins 3, 5, 7 missing* and *NC pin type* on JW1FSN (S4.5, S4.6): the
   footprint has pads 1, 2, 4, 6 and 8 only, and "NC" is the normally-closed
   contact, not a no-connect.
+- *Power output pins at the right* (S4.2) on TPS53015 and USB2517: a
+  regulator's internal-supply output (VREG5, VDD18) sits where its capacitor
+  is drawn, beside the input pins.
 
 Everything else it reports is a defect to fix.
 
