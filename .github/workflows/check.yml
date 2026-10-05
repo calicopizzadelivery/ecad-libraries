@@ -9,6 +9,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: python3 tools/build_symbols.py --check
+      - run: python3 tools/build_footprints.py --check
   klc:
     name: KiCad Library Conventions (report)
     runs-on: ubuntu-latest

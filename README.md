@@ -10,11 +10,12 @@ symbols/
   calico-ic.kicad_sym                 ICs
   calico-electromechanical.kicad_sym  connectors, relays, switches
 footprints/
-  calico.pretty/                      house footprints (none yet)
+  calico.pretty/                      house footprints
 tables/
   sym-lib-table, fp-lib-table         fragments to copy into a project
 tools/
   build_symbols.py                    the source of truth for symbols/
+  build_footprints.py                 the source of truth for footprints/
   glyphs.py, kisym.py                 text widths and the s-expression writer
 ```
 
@@ -93,10 +94,15 @@ Everything else it reports is a defect to fix.
 ## Footprints and 3D models
 
 Take footprints from KiCad's own libraries while they fit the part. A
-footprint that has to be made goes into `footprints/calico.pretty`, checked
-with `check_footprint.py` from the same tool set. 3D models belong in
-`3dmodels/calico.3dshapes/` and are tracked with Git LFS (see
-`.gitattributes`); none yet.
+footprint that has to be made is built by `tools/build_footprints.py` from
+the manufacturer's drawing, which its description cites with the dimensions
+taken from it, and goes into `footprints/calico.pretty`; `--check` and the CI
+keep hand edits out, as for symbols. `check_footprint.py` runs as a report:
+the anchor of a connector sits on its mechanical datum rather than the pad
+centre (F6.2), and 3D models (F9.3) are referenced as
+`${KIPRJMOD}/../libs/3dmodels/calico.3dshapes/<footprint>.step` but none
+exist yet. Models belong in `3dmodels/calico.3dshapes/` on Git LFS (see
+`.gitattributes`).
 
 ## Licence
 

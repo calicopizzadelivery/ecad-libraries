@@ -15,6 +15,11 @@ The Jetson Nano carrier's (mythtv-porg) symbols, from its project library:
 - Builder: `units_symbol()` for multi-unit box symbols; no-connect pins are
   hidden (KLC S4.6); `_pin()` takes a length for a pin that has to reach a
   shallower body.
+- calico.pretty, the first footprints, from `tools/build_footprints.py`:
+  M.2 Key E socket TE 2199230-4 (drawing C-2199230 B4), FPC TE 1-1734248-5
+  vertical 15-way (C-1734248 E1), onsemi WDFN8 3.3x3.3 0.65P (case 511AB),
+  ST PowerFLAT 3.3x3.3 8L. Each description says what was read from the
+  drawing and what still needs verifying.
 
 ## 0.2.2 (2026-10-05)
 
