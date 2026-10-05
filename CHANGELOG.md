@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 (2026-10-05)
+
+- Reference text above the top pins' numbers on symbols with top pins.
+- USB_A_Stacked2: VBUS and GND rows 12.7 mm below the data rows, so an ESD
+  array on the data rows keeps its GND symbol clear of the switched VBUS row.
+
 ## 0.1.0 (2026-10-05)
 
 First release: the seven symbols that sbc-development-baseboard had in its

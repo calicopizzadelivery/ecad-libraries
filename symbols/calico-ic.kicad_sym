@@ -10,7 +10,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
-			(at -30.48 95.25 0)
+			(at -30.48 97.28 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1911,7 +1911,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
-			(at -35.56 69.85 0)
+			(at -35.56 71.88 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3391,7 +3391,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
-			(at -10.16 8.89 0)
+			(at -10.16 10.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

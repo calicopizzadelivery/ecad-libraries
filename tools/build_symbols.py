@@ -110,7 +110,8 @@ def box_symbol(name, left, right, top=(), bottom=(), ref="U", footprint="", desc
             # edge is free and both fit on that line; stacked under the reference when the body
             # is too narrow for the two side by side; else below the body, at the left when the
             # bottom edge is busy, at the right otherwise
-            _prop("Reference", ref, (round(x0, 4), round(yt + (3.3 if stacked else 1.27), 4)), justify="left"),
+            # ... and above the top pins' numbers, which run along their stubs, when there are top pins
+            _prop("Reference", ref, (round(x0, 4), round(yt + (3.3 if (stacked or top) else 1.27), 4)), justify="left"),
             (_prop("Value", name, (round(x0, 4), round(yt + 1.27, 4)), justify="left") if stacked
              else _prop("Value", name, (round(-x0, 4), round(yt + 1.27, 4)), justify="right") if not top
              else _prop("Value", name, (round(x0, 4), round(yb - 1.27, 4)), justify="right") if nb >= 4
@@ -236,7 +237,9 @@ def usb_a_stacked():
     name = "USB_A_Stacked2"
     W, H = 15.24, 25.4
     x0, y0 = -W / 2, H / 2
-    rows = {0: 7.62, 1: 5.08, 6: -5.08, 7: -7.62}        # on the 2.54 grid (KLC S4.1)
+    # on the 2.54 grid (KLC S4.1); VBUS sits 12.7 below D+, so the ESD array on the D rows
+    # keeps its GND symbol clear of the switched VBUS row drawn under it
+    rows = {0: 7.62, 1: 5.08, 6: -7.62, 7: -10.16}
     def unit(u, pins, shield):
         node = [Sym("symbol"), f"{name}_{u}_1",
                 [Sym("rectangle"), [Sym("start"), round(x0, 4), round(y0, 4)], [Sym("end"), round(-x0, 4), round(-y0, 4)],
