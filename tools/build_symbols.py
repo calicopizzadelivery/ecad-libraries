@@ -203,10 +203,10 @@ def usb2517():
 
 
 def tps2553():
-    # FAULT above OUT on the right: the switched rail's parts hang down from the OUT row, the
-    # FAULT label runs above them
+    # FAULT two rows above OUT on the right: the switched rail's parts hang down from the OUT
+    # row and a label on that row prints above the wire, so the FAULT label needs the gap row
     return box_symbol("TPS2553DBV", [("1", "IN", PI), None, ("3", "EN", I), None, ("5", "ILIM", P)],
-                      [("4", "~{FAULT}", OC), ("6", "OUT", PO)], bottom=[("2", "GND", PI)], ref="U", width=15.24,
+                      [("4", "~{FAULT}", OC), None, ("6", "OUT", PO)], bottom=[("2", "GND", PI)], ref="U", width=15.24,
                       footprint="Package_TO_SOT_SMD:SOT-23-6",
                       description="Current-limited USB power switch, EN active high, adjustable limit via ILIM resistor, SOT-23-6. Pinout from TI SLVS841.",
                       datasheet="https://www.ti.com/lit/ds/symlink/tps2553.pdf")

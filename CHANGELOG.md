@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 (2026-10-05)
+
+- TPS2553DBV: a gap row between FAULT and OUT, so a label on the OUT row
+  (whose text prints above the wire) clears the FAULT label.
+
 ## 0.1.1 (2026-10-05)
 
 - Reference text above the top pins' numbers on symbols with top pins.
