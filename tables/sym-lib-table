@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "calico-ic")(type "KiCad")(uri "${KIPRJMOD}/../libs/symbols/calico-ic.kicad_sym")(options "")(descr "calico house symbols: ICs"))
+	(lib (name "calico-electromechanical")(type "KiCad")(uri "${KIPRJMOD}/../libs/symbols/calico-electromechanical.kicad_sym")(options "")(descr "calico house symbols: connectors, relays, switches"))
+)

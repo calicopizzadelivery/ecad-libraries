@@ -1,0 +1,27 @@
+name: check
+on: [push, pull_request]
+jobs:
+  generated:
+    name: symbols match the builder
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python3 tools/build_symbols.py --check
+  klc:
+    name: KiCad Library Conventions (report)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: git clone --depth 1 https://gitlab.com/kicad/libraries/kicad-library-utils.git /tmp/klu
+      - name: symbols
+        run: python3 /tmp/klu/klc-check/check_symbol.py -v symbols/*.kicad_sym
+      - name: footprints
+        run: |
+          shopt -s nullglob
+          files=(footprints/*.pretty/*.kicad_mod)
+          if [ ${#files[@]} -gt 0 ]; then python3 /tmp/klu/klc-check/check_footprint.py -v "${files[@]}"; else echo "no footprints yet"; fi
