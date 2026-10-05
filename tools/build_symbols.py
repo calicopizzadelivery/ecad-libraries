@@ -32,10 +32,12 @@ def _prop(name, value, at, hide=False, size=1.27, justify=None):
     return p
 
 
-def _pin(etype, number, name, x, y, angle, length=2.54):
-    return [Sym("pin"), Sym(etype), Sym("line"), [Sym("at"), x, y, angle], [Sym("length"), length],
-            [Sym("name"), name, [Sym("effects"), [Sym("font"), [Sym("size"), 1.27, 1.27]]]],
-            [Sym("number"), number, [Sym("effects"), [Sym("font"), [Sym("size"), 1.27, 1.27]]]]]
+def _pin(etype, number, name, x, y, angle, length=2.54, hide=False):
+    node = [Sym("pin"), Sym(etype), Sym("line"), [Sym("at"), x, y, angle], [Sym("length"), length]]
+    if hide:
+        node.append([Sym("hide"), Sym("yes")])                       # KLC S4.6: a no-connect pin is invisible
+    return node + [[Sym("name"), name, [Sym("effects"), [Sym("font"), [Sym("size"), 1.27, 1.27]]]],
+                   [Sym("number"), number, [Sym("effects"), [Sym("font"), [Sym("size"), 1.27, 1.27]]]]]
 
 
 def box_symbol(name, left, right, top=(), bottom=(), ref="U", footprint="", description="",
@@ -86,11 +88,11 @@ def box_symbol(name, left, right, top=(), bottom=(), ref="U", footprint="", desc
     for i, p in enumerate(left):
         if p is None: continue
         y = round(y0 - (i + 1) * pitch, 4)
-        pins.append(_pin(p[2], p[0], p[1], round(x0 - 2.54, 4), y, 0))
+        pins.append(_pin(p[2], p[0], p[1], round(x0 - 2.54, 4), y, 0, hide=p[2] == NC))
     for i, p in enumerate(right):
         if p is None: continue
         y = round(y0 - (i + 1) * pitch, 4)
-        pins.append(_pin(p[2], p[0], p[1], round(-x0 + 2.54, 4), y, 180))
+        pins.append(_pin(p[2], p[0], p[1], round(-x0 + 2.54, 4), y, 180, hide=p[2] == NC))
     for i, p in enumerate(top):
         if p is None: continue
         pins.append(_pin(p[2], p[0], p[1], name_x(top, i), round(yt + 2.54, 4), 270))
@@ -125,6 +127,25 @@ def box_symbol(name, left, right, top=(), bottom=(), ref="U", footprint="", desc
     return node
 
 
+def units_symbol(name, units, ref="U", footprint="", description="", datasheet="", value_hint=None, keywords=""):
+    """A multi-unit box symbol: units = [dict(left, right, top, bottom, width)] in unit order.
+    Each unit gets its own rectangle and pins under `name_<u>_1`; the fields come from unit 1."""
+    nodes = [box_symbol(name, u.get("left", []), u.get("right", []), u.get("top", ()), u.get("bottom", ()), ref=ref,
+                        footprint=footprint, description=description, width=u.get("width"), datasheet=datasheet,
+                        value_hint=value_hint, keywords=keywords)
+             for u in units]
+    head = [c for c in nodes[0] if not (isinstance(c, list) and c and c[0] in (Sym("symbol"), Sym("embedded_fonts")))]
+    subs = []
+    for u, n in enumerate(nodes, start=1):
+        body = pins = None
+        for c in n:
+            if isinstance(c, list) and c and c[0] == Sym("symbol"):
+                if c[1].endswith("_0_1"): body = c
+                elif c[1].endswith("_1_1"): pins = c
+        subs.append([Sym("symbol"), f"{name}_{u}_1"] + body[2:] + pins[2:])
+    return head + subs + [[Sym("embedded_fonts"), Sym("no")]]
+
+
 def fp_filter(footprint):
     """KLC S5.2: a footprint filter that matches the default footprint and its variants."""
     if not footprint:
@@ -140,6 +161,20 @@ KEYWORDS = {
     "TPS54560BDDA": "TI buck step-down converter 5A",
     "JW1FSN": "Panasonic power relay SPDT 10A",
     "USB_A_Stacked2": "USB receptacle double stacked",
+    # mythtv-porg (Jetson Nano carrier)
+    "EFM8SB10F2G": "Silicon Labs Sleepy Bee 8051 MCU QFN20 supervisor",
+    "GS7116S5-ADJ": "Green Solution LDO adjustable 500mA SOT23-5",
+    "MP2152": "MPS buck step-down converter 2A QFN",
+    "TPS53015": "TI D-CAP synchronous buck controller VSSOP-10",
+    "STUSB4531": "ST USB-C PD sink controller standalone QFN-16",
+    "NCP301LSN20T1": "onsemi voltage detector reset supervisor 2.0V",
+    "CYUSB3304": "Infineon Cypress EZ-USB HX3 USB 3.0 hub 4-port",
+    "AP22811": "Diodes load switch current limit 2A SOT-25",
+    "APL3552": "Anpec load switch adjustable current limit SOT23-5",
+    "GS7616SC": "Green Solution load switch small SOT-363",
+    "TPD4E02B04DQA": "TI ESD protection array 4-channel HDMI USB3",
+    "2N7002DW": "Diodes dual N-channel MOSFET SOT-363 level shifter",
+    "Jetson_Nano_SODIMM": "NVIDIA Jetson Nano module SO-DIMM 260 socket",
 }
 
 
@@ -280,9 +315,242 @@ def tps54560():
                       datasheet="https://www.ti.com/lit/ds/symlink/tps54560b.pdf")
 
 
+# ----------------------------------------------------------------------------- mythtv-porg
+def _conv(rows):
+    """Old-generator rows (number, name, etype) -> box_symbol rows; None stays a gap."""
+    return [None if r is None else (str(r[0]), r[1], r[2]) for r in rows]
+
+
+# --- Jetson Nano SO-DIMM, five units (Nano PDG Table 2-2 names; pin usage is a sheet matter) ---
+SODIMM_UNITS = [{'h': 86.36,
+  'left': [('237', 'POWER_EN', 'input'), ('239', 'SYS_RESET*', 'output'), ('233', 'SHUTDOWN_REQ*', 'open_collector'), ('240', 'SLEEP/WAKE*', 'input'),
+           ('214', 'FORCE_RECOVERY*', 'input'), ('178', 'MOD_SLEEP*', 'output'), ('235', 'PMIC_BBAT', 'passive'), ('210', 'CLK_32K_OUT', 'output'),
+           ('127', 'GPIO04', 'bidirectional'), None, ('99', 'UART0_TXD', 'output'), ('101', 'UART0_RXD', 'input'), ('103', 'UART0_RTS*', 'output'),
+           ('105', 'UART0_CTS*', 'input'), None, ('203', 'UART1_TXD', 'output'), ('205', 'UART1_RXD', 'input'), ('207', 'UART1_RTS*', 'output'),
+           ('209', 'UART1_CTS*', 'input'), None, ('236', 'UART2_TXD', 'output'), ('238', 'UART2_RXD', 'input')],
+  'name': 'control',
+  'right': [('185', 'I2C0_SCL', 'bidirectional'), ('187', 'I2C0_SDA', 'bidirectional'), ('189', 'I2C1_SCL', 'bidirectional'),
+            ('191', 'I2C1_SDA', 'bidirectional'), ('232', 'I2C2_SCL', 'bidirectional'), ('234', 'I2C2_SDA', 'bidirectional'),
+            ('213', 'CAM_I2C_SCL', 'bidirectional'), ('215', 'CAM_I2C_SDA', 'bidirectional'), None, ('87', 'GPIO00', 'bidirectional'),
+            ('118', 'GPIO01', 'bidirectional'), ('124', 'GPIO02', 'bidirectional'), ('126', 'GPIO03', 'bidirectional'),
+            ('128', 'GPIO05', 'bidirectional'), ('130', 'GPIO06', 'bidirectional'), ('206', 'GPIO07', 'bidirectional'),
+            ('208', 'GPIO08', 'bidirectional'), ('211', 'GPIO09', 'bidirectional'), ('212', 'GPIO10', 'bidirectional'),
+            ('216', 'GPIO11', 'bidirectional'), ('218', 'GPIO12', 'bidirectional'), ('228', 'GPIO13', 'bidirectional'),
+            ('230', 'GPIO14', 'bidirectional'), None, ('114', 'CAM0_PWDN', 'output'), ('116', 'CAM0_MCLK', 'output'), ('120', 'CAM1_PWDN', 'output'),
+            ('122', 'CAM1_MCLK', 'output'), None, ('143', 'RSVD', 'no_connect'), ('145', 'RSVD', 'no_connect')],
+  'w': 35.56},
+ {'h': 78.74,
+  'left': [('109', 'USB0_D_N', 'bidirectional'), ('111', 'USB0_D_P', 'bidirectional'), None, ('115', 'USB1_D_N', 'bidirectional'),
+           ('117', 'USB1_D_P', 'bidirectional'), None, ('121', 'USB2_D_N', 'bidirectional'), ('123', 'USB2_D_P', 'bidirectional'), None,
+           ('161', 'USBSS_RX_N', 'input'), ('163', 'USBSS_RX_P', 'input'), ('166', 'USBSS_TX_N', 'output'), ('168', 'USBSS_TX_P', 'output'), None,
+           ('184', 'GBE_MDI0_N', 'bidirectional'), ('186', 'GBE_MDI0_P', 'bidirectional'), ('190', 'GBE_MDI1_N', 'bidirectional'),
+           ('192', 'GBE_MDI1_P', 'bidirectional'), ('196', 'GBE_MDI2_N', 'bidirectional'), ('198', 'GBE_MDI2_P', 'bidirectional'),
+           ('202', 'GBE_MDI3_N', 'bidirectional'), ('204', 'GBE_MDI3_P', 'bidirectional'), ('188', 'GBE_LED_LINK', 'output'),
+           ('194', 'GBE_LED_ACT', 'output')],
+  'name': 'usb-gbe-spi-i2s-sdmmc',
+  'right': [('89', 'SPI0_MOSI', 'output'), ('91', 'SPI0_SCK', 'output'), ('93', 'SPI0_MISO', 'input'), ('95', 'SPI0_CS0*', 'output'),
+            ('97', 'SPI0_CS1*', 'output'), None, ('104', 'SPI1_MOSI', 'output'), ('106', 'SPI1_SCK', 'output'), ('108', 'SPI1_MISO', 'input'),
+            ('110', 'SPI1_CS0*', 'output'), ('112', 'SPI1_CS1*', 'output'), None, ('193', 'I2S0_DOUT', 'output'), ('195', 'I2S0_DIN', 'input'),
+            ('197', 'I2S0_FS', 'bidirectional'), ('199', 'I2S0_SCLK', 'bidirectional'), None, ('220', 'I2S1_DOUT', 'output'),
+            ('222', 'I2S1_DIN', 'input'), ('224', 'I2S1_FS', 'bidirectional'), ('226', 'I2S1_SCLK', 'bidirectional'), None,
+            ('219', 'SDMMC_DAT0', 'bidirectional'), ('221', 'SDMMC_DAT1', 'bidirectional'), ('223', 'SDMMC_DAT2', 'bidirectional'),
+            ('225', 'SDMMC_DAT3', 'bidirectional'), ('227', 'SDMMC_CMD', 'bidirectional'), ('229', 'SDMMC_CLK', 'output')],
+  'w': 33.02},
+ {'h': 86.36,
+  'left': [('63', 'DP1_TXD0_N', 'output'), ('65', 'DP1_TXD0_P', 'output'), ('69', 'DP1_TXD1_N', 'output'), ('71', 'DP1_TXD1_P', 'output'),
+           ('75', 'DP1_TXD2_N', 'output'), ('77', 'DP1_TXD2_P', 'output'), ('81', 'DP1_TXD3_N', 'output'), ('83', 'DP1_TXD3_P', 'output'),
+           ('98', 'DP1_AUX_N', 'bidirectional'), ('100', 'DP1_AUX_P', 'bidirectional'), ('96', 'DP1_HPD', 'input'),
+           ('94', 'HDMI_CEC', 'bidirectional'), None, ('39', 'DP0_TXD0_N', 'output'), ('41', 'DP0_TXD0_P', 'output'), ('45', 'DP0_TXD1_N', 'output'),
+           ('47', 'DP0_TXD1_P', 'output'), ('51', 'DP0_TXD2_N', 'output'), ('53', 'DP0_TXD2_P', 'output'), ('57', 'DP0_TXD3_N', 'output'),
+           ('59', 'DP0_TXD3_P', 'output'), ('90', 'DP0_AUX_N', 'bidirectional'), ('92', 'DP0_AUX_P', 'bidirectional'), ('88', 'DP0_HPD', 'input'),
+           None, ('70', 'DSI_D0_N', 'output'), ('72', 'DSI_D0_P', 'output'), ('82', 'DSI_D1_N', 'output'), ('84', 'DSI_D1_P', 'output'),
+           ('76', 'DSI_CLK_N', 'output'), ('78', 'DSI_CLK_P', 'output')],
+  'name': 'video-pcie',
+  'right': [('131', 'PCIE0_RX0_N', 'input'), ('133', 'PCIE0_RX0_P', 'input'), ('134', 'PCIE0_TX0_N', 'output'), ('136', 'PCIE0_TX0_P', 'output'),
+            ('137', 'PCIE0_RX1_N', 'input'), ('139', 'PCIE0_RX1_P', 'input'), ('140', 'PCIE0_TX1_N', 'output'), ('142', 'PCIE0_TX1_P', 'output'),
+            ('149', 'PCIE0_RX2_N', 'input'), ('151', 'PCIE0_RX2_P', 'input'), ('148', 'PCIE0_TX2_N', 'output'), ('150', 'PCIE0_TX2_P', 'output'),
+            ('155', 'PCIE0_RX3_N', 'input'), ('157', 'PCIE0_RX3_P', 'input'), ('154', 'PCIE0_TX3_N', 'output'), ('156', 'PCIE0_TX3_P', 'output'),
+            ('160', 'PCIE0_CLK_N', 'output'), ('162', 'PCIE0_CLK_P', 'output'), ('179', 'PCIE_WAKE*', 'input'), ('180', 'PCIE0_CLKREQ*', 'input'),
+            ('181', 'PCIE0_RST*', 'output'), None, ('167', 'RSVD', 'no_connect'), ('169', 'RSVD', 'no_connect'), ('172', 'RSVD', 'no_connect'),
+            ('174', 'RSVD', 'no_connect'), ('173', 'RSVD', 'no_connect'), ('175', 'RSVD', 'no_connect'), ('182', 'RSVD', 'no_connect'),
+            ('183', 'RSVD', 'no_connect')],
+  'w': 33.02},
+ {'h': 55.88,
+  'left': [('4', 'CSI0_D0_N', 'input'), ('6', 'CSI0_D0_P', 'input'), ('16', 'CSI0_D1_N', 'input'), ('18', 'CSI0_D1_P', 'input'),
+           ('10', 'CSI0_CLK_N', 'input'), ('12', 'CSI0_CLK_P', 'input'), None, ('3', 'CSI1_D0_N', 'input'), ('5', 'CSI1_D0_P', 'input'),
+           ('15', 'CSI1_D1_N', 'input'), ('17', 'CSI1_D1_P', 'input'), ('9', 'RSVD', 'no_connect'), ('11', 'RSVD', 'no_connect'), None,
+           ('22', 'CSI2_D0_N', 'input'), ('24', 'CSI2_D0_P', 'input'), ('34', 'CSI2_D1_N', 'input'), ('36', 'CSI2_D1_P', 'input'),
+           ('28', 'CSI2_CLK_N', 'input'), ('30', 'CSI2_CLK_P', 'input')],
+  'name': 'csi',
+  'right': [('21', 'CSI3_D0_N', 'input'), ('23', 'CSI3_D0_P', 'input'), ('33', 'CSI3_D1_N', 'input'), ('35', 'CSI3_D1_P', 'input'),
+            ('27', 'CSI3_CLK_N', 'input'), ('29', 'CSI3_CLK_P', 'input'), None, ('46', 'CSI4_D0_N', 'input'), ('48', 'CSI4_D0_P', 'input'),
+            ('58', 'CSI4_D1_N', 'input'), ('60', 'CSI4_D1_P', 'input'), ('40', 'CSI4_D2_N', 'input'), ('42', 'CSI4_D2_P', 'input'),
+            ('64', 'CSI4_D3_N', 'input'), ('66', 'CSI4_D3_P', 'input'), ('52', 'CSI4_CLK_N', 'input'), ('54', 'CSI4_CLK_P', 'input')],
+  'w': 30.48},
+ {'h': 96.52,
+  'left': [('1', 'GND', 'power_in'), ('2', 'GND', 'power_in'), ('7', 'GND', 'power_in'), ('8', 'GND', 'power_in'), ('13', 'GND', 'power_in'),
+           ('14', 'GND', 'power_in'), ('19', 'GND', 'power_in'), ('20', 'GND', 'power_in'), ('25', 'GND', 'power_in'), ('26', 'GND', 'power_in'),
+           ('31', 'GND', 'power_in'), ('32', 'GND', 'power_in'), ('37', 'GND', 'power_in'), ('38', 'GND', 'power_in'), ('43', 'GND', 'power_in'),
+           ('44', 'GND', 'power_in'), ('49', 'GND', 'power_in'), ('50', 'GND', 'power_in'), ('55', 'GND', 'power_in'), ('56', 'GND', 'power_in'),
+           ('61', 'GND', 'power_in'), ('62', 'GND', 'power_in'), ('67', 'GND', 'power_in'), ('68', 'GND', 'power_in'), ('73', 'GND', 'power_in'),
+           ('74', 'GND', 'power_in'), ('79', 'GND', 'power_in'), ('80', 'GND', 'power_in'), ('85', 'GND', 'power_in'), ('86', 'GND', 'power_in'),
+           ('102', 'GND', 'power_in'), ('107', 'GND', 'power_in'), ('113', 'GND', 'power_in'), ('119', 'GND', 'power_in')],
+  'name': 'power',
+  'right': [('125', 'GND', 'power_in'), ('129', 'GND', 'power_in'), ('132', 'GND', 'power_in'), ('135', 'GND', 'power_in'),
+            ('138', 'GND', 'power_in'), ('141', 'GND', 'power_in'), ('144', 'GND', 'power_in'), ('146', 'GND', 'power_in'),
+            ('147', 'GND', 'power_in'), ('152', 'GND', 'power_in'), ('153', 'GND', 'power_in'), ('158', 'GND', 'power_in'),
+            ('159', 'GND', 'power_in'), ('164', 'GND', 'power_in'), ('165', 'GND', 'power_in'), ('170', 'GND', 'power_in'),
+            ('171', 'GND', 'power_in'), ('176', 'GND', 'power_in'), ('177', 'GND', 'power_in'), ('200', 'GND', 'power_in'),
+            ('201', 'GND', 'power_in'), ('217', 'GND', 'power_in'), ('231', 'GND', 'power_in'), ('241', 'GND', 'power_in'),
+            ('242', 'GND', 'power_in'), ('243', 'GND', 'power_in'), ('244', 'GND', 'power_in'), ('245', 'GND', 'power_in'),
+            ('246', 'GND', 'power_in'), ('247', 'GND', 'power_in'), ('248', 'GND', 'power_in'), ('249', 'GND', 'power_in'),
+            ('250', 'GND', 'power_in'), ('MP', 'MP', 'passive')],
+  'top': [('251', 'VDD_IN', 'power_in'), ('252', 'VDD_IN', 'power_in'), ('253', 'VDD_IN', 'power_in'), ('254', 'VDD_IN', 'power_in'),
+          ('255', 'VDD_IN', 'power_in'), ('256', 'VDD_IN', 'power_in'), ('257', 'VDD_IN', 'power_in'), ('258', 'VDD_IN', 'power_in'),
+          ('259', 'VDD_IN', 'power_in'), ('260', 'VDD_IN', 'power_in')],
+  'w': 30.48}]
+
+
+def jetson_nano_sodimm():
+    units = [dict(left=_conv(u.get("left", [])), right=_conv(u.get("right", [])), top=_conv(u.get("top", ())),
+                  bottom=_conv(u.get("bottom", ())), width=u["w"]) for u in SODIMM_UNITS]
+    return units_symbol("Jetson_Nano_SODIMM", units, ref="J", footprint="Connector_PCBEdge:SODIMM-260_DDR4_H4.0-5.2_OrientationStd_Socket",
+                        description="NVIDIA Jetson Nano module (P3448-0000 / -0002) in a 260-pin DDR4 SO-DIMM socket, five units: control / USB-GbE-SPI-I2S-SDMMC / video-PCIe / CSI / power. Pin names and numbers from the Jetson Nano Product Design Guide DG-09502-001 v2.4 Table 2-2; pins 9/11 and 167-183 are RSVD there.",
+                        datasheet="https://developer.nvidia.com/embedded/dlc/jetson-nano-product-design-guide", value_hint="Jetson Nano")
+
+
+def efm8():
+    return box_symbol("EFM8SB10F2G",
+                      [("5", "RST#/C2CK", B), ("6", "P2.7/C2D", B), ("7", "P1.7", B), ("8", "P1.6", B), ("9", "P1.5", B), ("10", "P1.3", B), ("11", "P1.2", B)],
+                      [("2", "P0.0", B), ("1", "P0.1", B), ("20", "P0.2", B), ("19", "P0.3", B), ("18", "P0.4", B), ("17", "P0.5", B), ("16", "P0.6", B), ("15", "P0.7", B), ("14", "P1.0", B), ("13", "P1.1", B)],
+                      top=[("4", "VDD", PI)], bottom=[("3", "GND", PI), ("12", "GND", PI), ("21", "EP", PI)], ref="U", width=25.4,
+                      footprint="Package_DFN_QFN:QFN-20-1EP_3x3mm_P0.4mm_EP1.65x1.65mm",
+                      description="Silicon Labs Sleepy Bee 8051 MCU, 2 kB flash, QFN20. Pin numbers from the EFM8SB1 datasheet pin definitions table (QFN20 column); used as the Jetson power-button supervisor, after NVIDIA P3509 U18.",
+                      datasheet="https://www.silabs.com/documents/public/data-sheets/efm8sb1-datasheet.pdf")
+
+
+def gs7116():
+    return box_symbol("GS7116S5-ADJ", [("1", "IN", PI), ("3", "EN", I)], [("5", "OUT", PO), ("4", "ADJ", I)], bottom=[("2", "GND", PI)],
+                      ref="U", width=15.24, footprint="Package_TO_SOT_SMD:SOT-23-5", value_hint="GS7116S5-ADJ-R",
+                      description="Green Solution 500 mA adjustable LDO, 0.8 V reference, SOT23-5. Pin order from the GS7116 datasheet pin configuration (SOT23-5); NVIDIA P3509 U6, the 3V3_AO rail. No manufacturer-hosted datasheet: the link is a mirror.",
+                      datasheet="https://datasheetspdf.com/pdf/1095893/GStek/GS7116/1")
+
+
+def mp2152():
+    return box_symbol("MP2152", [("3", "IN", PI), ("4", "EN", I)], [("2", "SW", O), ("6", "OUT", PO), ("5", "FB", I)], bottom=[("1", "GND", PI)],
+                      ref="U", width=15.24, footprint="Package_DFN_QFN:DFN-6-1EP_2x2mm_P0.65mm_EP1x1.6mm", value_hint="MP2152GQFU",
+                      description="MPS 2 A 5.5 V synchronous buck, 1.1 MHz, QFN-6 2x2. Pin numbers from the MP2152 datasheet pin functions table (QFN-6 (2x2mm)); NVIDIA P3509 U26, the hub's 1.2 V.",
+                      datasheet="https://www.monolithicpower.com/en/mp2152.html")
+
+
+def tps53015():
+    return box_symbol("TPS53015", [("5", "VIN", PI), ("4", "EN", I), ("3", "VREG5", PO), ("2", "PGOOD", OC), ("1", "VFB", I)],
+                      [("10", "VBST", P), ("9", "DRVH", O), ("8", "SW", P), ("7", "DRVL", O), ("6", "PGND", P)], ref="U", width=20.32,
+                      footprint="Package_SO:MSOP-10_3x3mm_P0.5mm", value_hint="TPS53015DGSR",
+                      description="TI D-CAP synchronous buck controller, 4.5-28 V in, VSSOP-10 (DGS). Pin numbers from the TPS53015 datasheet pin functions table.",
+                      datasheet="https://www.ti.com/lit/ds/symlink/tps53015.pdf")
+
+
+def stusb4531():
+    return box_symbol("STUSB4531", [("1", "VDD", PI), ("2", "CC1", B), ("3", "CC2", B), ("13", "VBUS_VS_DISCH", P), ("11", "DISCH", OC), ("9", "ADD0", I)],
+                      [("10", "VBUS_EN_SNK", OC), ("4", "GPOD", OC), ("14", "HVO1", OC), ("5", "HVO2", OC), ("8", "~{ALERT}", OC), ("6", "SCL", B), ("7", "SDA", B)],
+                      top=[("16", "VREG_2V7", PO), ("15", "VREG_1V2", PO)], bottom=[("12", "GND", PI), ("17", "EP", PI)], ref="U", width=30.48,
+                      footprint="Package_DFN_QFN:QFN-16-1EP_3x3mm_P0.5mm_EP1.675x1.675mm", value_hint="STUSB4531QTR",
+                      description="ST standalone USB-C PD sink controller, QFN-16 3x3. Pin numbers from the STUSB4531 datasheet Table 3 (pin description).",
+                      datasheet="https://www.st.com/resource/en/datasheet/stusb4531.pdf")
+
+
+def ncp301():
+    return box_symbol("NCP301LSN20T1", [("2", "INPUT", I)], [("1", "~{RST}", OC), ("4", "NC", NC), ("5", "NC", NC)], bottom=[("3", "GND", PI)],
+                      ref="U", width=15.24, footprint="Package_TO_SOT_SMD:SOT-23-5",
+                      description="onsemi NCP301L 2.0 V voltage detector, open-drain active-low reset, TSOP-5. Pin numbers from the NCP300/NCP301 datasheet pin function description (TSOP-5); NVIDIA P3509 U24.",
+                      datasheet="https://www.onsemi.com/pdf/datasheet/ncp300-d.pdf")
+
+
+def cyusb3304():
+    left = [("9", "US_RXP", I), ("8", "US_RXM", I), ("6", "US_TXP", O), ("5", "US_TXM", O), ("57", "US_DP", B), ("58", "US_DM", B), None,
+            ("17", "VBUS_US", PI), ("18", "VBUS_DS", PI), None,
+            ("31", "RESETN", I), ("23", "MODE_SEL0", I), ("24", "MODE_SEL1", I), ("32", "I2C_CLK", B), ("33", "I2C_DATA", B), ("20", "SUSPEND", B), None,
+            ("29", "PWR_EN", O), ("30", "OVRCURR", I), None,
+            ("21", "RESERVED1", B), ("22", "RESERVED2", I), ("25", "NC", NC), None,
+            ("55", "XTL_IN", I), ("54", "XTL_OUT", O), None, ("2", "RREF_USB2", P), ("26", "RREF_SS", P)]
+    right = [("51", "DS1_RXP", I), ("50", "DS1_RXM", I), ("47", "DS1_TXP", O), ("48", "DS1_TXM", O), ("60", "DS1_DP", B), ("59", "DS1_DM", B), None,
+             ("45", "DS2_RXP", I), ("44", "DS2_RXM", I), ("41", "DS2_TXP", O), ("42", "DS2_TXM", O), ("62", "DS2_DP", B), ("63", "DS2_DM", B), None,
+             ("35", "DS3_RXP", I), ("36", "DS3_RXM", I), ("38", "DS3_TXP", O), ("39", "DS3_TXM", O), ("65", "DS3_DP", B), ("64", "DS3_DM", B), None,
+             ("15", "DS4_RXP", I), ("14", "DS4_RXM", I), ("11", "DS4_TXP", O), ("12", "DS4_TXM", O), ("67", "DS4_DP", B), ("68", "DS4_DM", B)]
+    top = [("4", "AVDD33", PI), ("56", "AVDD33", PI), ("61", "AVDD33", PI), ("66", "AVDD33", PI), ("28", "VDD_IO", PI), None,
+           ("10", "AVDD12", PI), ("16", "AVDD12", PI), ("34", "AVDD12", PI), ("46", "AVDD12", PI), ("52", "AVDD12", PI), ("53", "AVDD12", PI), None,
+           ("1", "DVDD12", PI), ("3", "DVDD12", PI), ("7", "DVDD12", PI), ("13", "DVDD12", PI), ("27", "DVDD12", PI), ("37", "DVDD12", PI),
+           ("43", "DVDD12", PI), ("49", "DVDD12", PI), None, ("19", "VDD_EFUSE", PI)]
+    return box_symbol("CYUSB3304", left, right, top=top, bottom=[("40", "GND", PI), ("69", "EP", PI)], ref="U", width=58.42,
+                      footprint="Package_DFN_QFN:QFN-68-1EP_8x8mm_P0.4mm_EP5.2x5.2mm", value_hint="CYUSB3304-68LTXI",
+                      description="Infineon EZ-USB HX3 4-port USB 3.2 Gen 1 hub, 68-QFN 8x8. Pin numbers from datasheet 001-73643 Table 2 (68-QFN pin list); no pin-straps, ganged power control.",
+                      datasheet="https://www.infineon.com/dgdl/Infineon-EZ-USB_HX3_USB_3.0_Hub-DataSheet-v23_00-EN.pdf")
+
+
+def ap22811():
+    return box_symbol("AP22811", [("5", "IN", PI), ("4", "EN", I), ("3", "FLG", OC)], [("1", "OUT", PO)], bottom=[("2", "GND", PI)], ref="U", width=15.24,
+                      footprint="Package_TO_SOT_SMD:SOT-23-5", value_hint="AP22811BW5-7",
+                      description="Diodes 2 A load switch with current limit and fault flag, SOT-25. Pin numbers from the AP22811 datasheet pin description (SOT-25); A: EN active high, B: EN active low. NVIDIA P3509 U21.",
+                      datasheet="https://www.diodes.com/assets/Datasheets/AP22811.pdf")
+
+
+def apl3552():
+    return box_symbol("APL3552", [("5", "IN", PI), ("4", "EN", I), ("3", "OC*/ISET", P)], [("1", "OUT", PO)], bottom=[("2", "GND", PI)], ref="U", width=15.24,
+                      footprint="Package_TO_SOT_SMD:SOT-23-5", value_hint="APL3552ABI-TRG",
+                      description="Anpec 2.7-5.5 V load switch, adjustable current limit, SOT23-5. Pin numbers from the APL3552 datasheet pin description; NVIDIA P3449 U502 (the HDMI 5 V).",
+                      datasheet="https://www.anpec.com.tw/ss_product_datasheet.php?psn=APL3552")
+
+
+def gs7616():
+    return box_symbol("GS7616SC", [("5", "IN", PI), ("6", "IN", PI), ("3", "EN", I)], [("1", "OUT", PO), ("2", "OUT", P)], bottom=[("4", "GND", PI)], ref="U", width=15.24,
+                      footprint="Package_TO_SOT_SMD:SOT-363_SC-70-6", value_hint="GS7616SC-R",
+                      description="Green Solution small load switch, SOT-363. Pin order as NVIDIA P3449 U64 (gates the HDMI 3.3 V from MOD_SLEEP*); no public datasheet found, the link is the manufacturer's product list - VERIFY against the part before fab.",
+                      datasheet="http://www.gstekic.com/product_list.php?product_major_id=31")
+
+
+def tpd4e02b04():
+    """TI TPD4E02B04DQA drawn as the flow-through part it is: USON-10 pads 1/10, 2/9, 4/7, 5/6 are the two
+    ends of one channel each, 3/8 GND. KiCad's own symbol puts every pad on one side and names the second
+    pads NC, which cannot carry a lane through the array; this one has one end of each channel per side."""
+    name = "TPD4E02B04DQA"
+    pins = []
+    for i, (a, b) in enumerate((("1", "10"), ("2", "9"), ("4", "7"), ("5", "6"))):
+        y = round(5.08 - i * 2.54, 4)
+        pins.append(_pin(P, b, f"IO{i + 1}", -7.62, y, 0))
+        pins.append(_pin(P, a, f"IO{i + 1}", 7.62, y, 180))
+    pins.append(_pin(PI, "3", "GND", 0, -7.62, 90))
+    pins.append(_pin(PI, "8", "GND", 0, -7.62, 90))
+    fp = "Package_SON:USON-10_2.5x1.0mm_P0.5mm"
+    body = [Sym("symbol"), f"{name}_0_1",
+            [Sym("rectangle"), [Sym("start"), -5.08, 7.62], [Sym("end"), 5.08, -5.08],
+             [Sym("stroke"), [Sym("width"), 0.254], [Sym("type"), Sym("default")]], [Sym("fill"), [Sym("type"), Sym("background")]]]]
+    unit = [Sym("symbol"), f"{name}_1_1"] + pins
+    return [Sym("symbol"), name, [Sym("pin_names"), [Sym("offset"), 0.508]], [Sym("exclude_from_sim"), Sym("no")],
+            [Sym("in_bom"), Sym("yes")], [Sym("on_board"), Sym("yes")],
+            _prop("Reference", "D", (-5.08, 11.43), justify="left"), _prop("Value", name, (-5.08, 8.89), justify="left"),
+            _prop("Footprint", fp, (0, 0), hide=True),
+            _prop("Datasheet", "https://www.ti.com/lit/ds/symlink/tpd4e02b04.pdf", (0, 0), hide=True),
+            _prop("Description", "4-channel ESD array for HDMI / USB 3, 0.5 pF, USON-10 flow-through: pads 1/10, 2/9, 4/7, 5/6 are the two ends of one channel each, 3/8 GND (TPD4E02B04 datasheet pin functions, DQA package). NVIDIA P3449 D23/D24.", (0, 0), hide=True),
+            _prop("ki_keywords", KEYWORDS[name], (0, 0), hide=True),
+            _prop("ki_fp_filters", fp_filter(fp), (0, 0), hide=True),
+            body, unit, [Sym("embedded_fonts"), Sym("no")]]
+
+
+def nmos_dual_2n7002dw():
+    """Drawn as a pass element, one unit per FET: source left, drain right, gate on top, so a
+    bidirectional level shifter lies in the line it shifts."""
+    return units_symbol("2N7002DW", [dict(left=[("1", "S1", P)], right=[("6", "D1", P)], top=[("2", "G1", I)], width=12.7),
+                                     dict(left=[("4", "S2", P)], right=[("3", "D2", P)], top=[("5", "G2", I)], width=12.7)],
+                        ref="Q", footprint="Package_TO_SOT_SMD:SOT-363_SC-70-6",
+                        description="Dual N-channel MOSFET 60 V 230 mA, SOT-363, drawn as two pass elements. Pin numbers from the Diodes 2N7002DW datasheet pin configuration (Q1: S1 1, G1 2, D1 6; Q2: D2 3, S2 4, G2 5). NVIDIA P3449 Q506, the HDMI DDC shifter.",
+                        datasheet="https://www.diodes.com/assets/Datasheets/ds30896.pdf")
+
+
 LIBRARIES = {
-    "calico-ic": [k64, usb2517, tps2553, pca9517a, tps54560],
-    "calico-electromechanical": [usb_a_stacked, jw1fsn],
+    "calico-ic": [k64, usb2517, tps2553, pca9517a, tps54560,
+                  efm8, gs7116, mp2152, tps53015, stusb4531, ncp301, cyusb3304, ap22811, apl3552, gs7616, tpd4e02b04, nmos_dual_2n7002dw],
+    "calico-electromechanical": [usb_a_stacked, jw1fsn, jetson_nano_sodimm],
 }
 
 
