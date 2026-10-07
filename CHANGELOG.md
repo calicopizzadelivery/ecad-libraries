@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2 (2026-10-06)
+
+- calico-ic gains USBLC6-2SC6-IO2up: the ST ESD array drawn with I/O2 on
+  the upper row, for receptacles whose D- pad lies on the I/O2 end of the
+  package, so the pair runs through the array uncrossed and the sheet stays
+  straight (ecad-standards/layout.md 3.8).
+
 ## 0.3.1 (2026-10-05)
 
 - CYUSB3304: the crystal pins move to the bottom of the left column, below

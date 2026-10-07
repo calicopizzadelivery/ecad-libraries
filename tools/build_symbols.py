@@ -157,6 +157,7 @@ KEYWORDS = {
     "MK64FN1M0VLL12": "NXP Kinetis K64 Cortex-M4F MCU USB ENET",
     "USB2517": "Microchip USB 2.0 hub 7-port",
     "TPS2553DBV": "TI USB power switch current limit",
+    "USBLC6-2SC6-IO2up": "ST USB ESD protection array flow-through swapped rows",
     "PCA9517A": "NXP I2C bus repeater level translator",
     "TPS54560BDDA": "TI buck step-down converter 5A",
     "JW1FSN": "Panasonic power relay SPDT 10A",
@@ -252,6 +253,19 @@ def tps2553():
                       footprint="Package_TO_SOT_SMD:SOT-23-6",
                       description="Current-limited USB power switch, EN active high, adjustable limit via ILIM resistor, SOT-23-6. Pinout from TI SLVS841.",
                       datasheet="https://www.ti.com/lit/ds/symlink/tps2553.pdf")
+
+
+def usblc6_flow():
+    # The USBLC6-2SC6 with I/O2 (pins 3, 4) on the upper row and I/O1 (1, 6) on the lower, the reverse of
+    # the stock symbol. On the board the pair enters one package end and leaves the other; where the
+    # receptacle's D- pad lies on the I/O2 end, drawing D- on I/O2 keeps the pair uncrossed through the array
+    # without crossing wires on the sheet (ecad-standards/layout.md 3.8). Pins and body as the stock symbol
+    # (5.08 wide, rows 2.54 apart); place it one row lower than the stock symbol to keep the upper row.
+    return box_symbol("USBLC6-2SC6-IO2up", [("3", "I/O2", P), ("1", "I/O1", P)], [("4", "I/O2", P), ("6", "I/O1", P)],
+                      top=[("5", "VBUS", P)], bottom=[("2", "GND", P)], ref="U", width=5.08,
+                      footprint="Package_TO_SOT_SMD:SOT-23-6",
+                      description="USB 2.0 ESD protection array, two flow-through channels, SOT-23-6; drawn with I/O2 on the upper row",
+                      datasheet="https://www.st.com/resource/en/datasheet/usblc6-2.pdf")
 
 
 def pca9517a():
@@ -614,7 +628,7 @@ def stl6p3llh6():
 
 
 LIBRARIES = {
-    "calico-ic": [k64, usb2517, tps2553, pca9517a, tps54560,
+    "calico-ic": [k64, usb2517, tps2553, usblc6_flow, pca9517a, tps54560,
                   efm8, gs7116, mp2152, tps53015, stusb4531, ncp301, cyusb3304, ap22811, apl3552, gs7616, tpd4e02b04, nmos_dual_2n7002dw,
                   nttfs4c25n, nttfs4c06n, stl6p3llh6],
     "calico-electromechanical": [usb_a_stacked, jw1fsn, jetson_nano_sodimm, usb3_a_stacked],
