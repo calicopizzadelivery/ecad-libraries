@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.2 (2026-10-06)
+## 0.3.3 (2026-10-06)
 
 - calico-ic gains USBLC6-2SC6-IO2up: the ST ESD array drawn with I/O2 on
   the upper row, for receptacles whose D- pad lies on the I/O2 end of the
