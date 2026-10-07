@@ -260,10 +260,10 @@ def usblc6_flow():
     # the stock symbol. On the board the pair enters one package end and leaves the other; where the
     # receptacle's D- pad lies on the I/O2 end, drawing D- on I/O2 keeps the pair uncrossed through the array
     # without crossing wires on the sheet (ecad-standards/layout.md 3.8). Pins and body as the stock symbol
-    # (rows 2.54 apart; 10.16 wide so the VBUS and GND names clear the side names and the body stays short);
+    # (rows 2.54 apart; 15.24 wide so the VBUS and GND names clear the side names and the body stays short);
     # place it one row lower than the stock symbol to keep the upper row.
     return box_symbol("USBLC6-2SC6-IO2up", [("3", "I/O2", P), ("1", "I/O1", P)], [("4", "I/O2", P), ("6", "I/O1", P)],
-                      top=[("5", "VBUS", P)], bottom=[("2", "GND", P)], ref="U", width=10.16,
+                      top=[("5", "VBUS", P)], bottom=[("2", "GND", P)], ref="U", width=15.24,
                       footprint="Package_TO_SOT_SMD:SOT-23-6",
                       description="USB 2.0 ESD protection array, two flow-through channels, SOT-23-6; drawn with I/O2 on the upper row",
                       datasheet="https://www.st.com/resource/en/datasheet/usblc6-2.pdf")
