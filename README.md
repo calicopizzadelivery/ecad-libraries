@@ -97,7 +97,10 @@ Take footprints from KiCad's own libraries while they fit the part. A
 footprint that has to be made is built by `tools/build_footprints.py` from
 the manufacturer's drawing, which its description cites with the dimensions
 taken from it, and goes into `footprints/calico.pretty`; `--check` and the CI
-keep hand edits out, as for symbols. `check_footprint.py` runs as a report:
+keep hand edits out, as for symbols. A KiCad footprint that needs one change
+(a pad trimmed for a fab's minimum) is rebuilt here pad for pad from KiCad's
+numbers with the change named in its description and `_<Change>` on its
+name, and keeps the KiCad part's 3D model (`FP(..., model=...)`). `check_footprint.py` runs as a report:
 the anchor of a connector sits on its mechanical datum rather than the pad
 centre (F6.2), and 3D models (F9.3) are referenced as
 `${KIPRJMOD}/../libs/3dmodels/calico.3dshapes/<footprint>.step` but none

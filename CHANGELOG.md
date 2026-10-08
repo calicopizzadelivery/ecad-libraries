@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.5 (2026-10-07)
+
+- calico.pretty gains USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal_PegClear:
+  KiCad's footprint of GCT's recommended layout, rebuilt by the builder pad
+  for pad, with the four outer ground pads (A1, A12, B1, B12) 0.1 mm shorter
+  at the end facing the 0.65 mm board-lock peg holes, so hole to copper is
+  0.29 mm instead of GCT's 0.19 mm and a fab's 0.25 mm minimum holds without
+  an exception. It keeps the KiCad part's 3D model: `FP` takes a `model`
+  path for a footprint derived from a library one.
+
 ## 0.3.4 (2026-10-06)
 
 - calico-ic gains USBLC6-2SC6-IO2up: the ST ESD array drawn with I/O2 on

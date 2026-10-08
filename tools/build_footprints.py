@@ -26,8 +26,9 @@ def fmt(v):
 
 
 class FP:
-    def __init__(self, name, descr, tags, smd=True):
+    def __init__(self, name, descr, tags, smd=True, model=None):
         self.name, self.descr, self.tags, self.smd = name, descr, tags, smd
+        self.model = model                                 # a footprint derived from a KiCad one keeps that part's model
         self.items = []
         self.counter = [0]
 
@@ -72,7 +73,7 @@ class FP:
         attr = "  (attr smd)" if self.smd else "  (attr through_hole)"
         # the model lives beside the library (3dmodels/calico.3dshapes, Git LFS); the path is relative to the
         # project the way the library tables are, so a project needs no per-machine variable
-        model = [f'  (model "${{KIPRJMOD}}/../libs/3dmodels/calico.3dshapes/{self.name}.step"',
+        model = [f'  (model "{self.model or "${KIPRJMOD}/../libs/3dmodels/calico.3dshapes/" + self.name + ".step"}"',
                  "    (offset (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))"]
         return "\n".join(head + self.items[:4] + [attr] + self.items[4:] + model + ["  (embedded_fonts no)", ")"]) + "\n"
 
@@ -187,7 +188,42 @@ def st_powerflat8():
                      "PowerFLAT DFN 3.3x3.3 0.65 MOSFET", lead=(0.40, 0.85, 1.40), ep=(2.75, 1.50))
 
 
-FOOTPRINTS = [m2_socket_e, fpc_te_1734248_15, onsemi_wdfn8, st_powerflat8]
+def gct_usb4105_pegclear():
+    """GCT USB4105 (USB 2.0 Type-C receptacle, 16 pins, top mount, horizontal): KiCad's own footprint, which follows
+    GCT's recommended layout (drawing rev B4: 12 x 1.15 pads, 2 x 0.65 peg holes 5.78 apart, 4 x 1.00 shield
+    slots), with one change: the four outer ground pads A1, A12, B1 and B12 are 1.05 instead of 1.15 long, cut
+    at the end that faces the board-lock peg hole, so the hole-to-copper gap is 0.29 mm where GCT's is 0.19 mm.
+    A fab whose minimum is 0.25 mm takes it without an exception. Everything else, pad for pad, is KiCad's."""
+    f = FP("USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal_PegClear",
+           "USB 2.0 Type C Receptacle, GCT USB4105, 16P, top mounted, horizontal, 5A: KiCad's footprint of GCT's recommended layout "
+           "(https://gct.co/files/drawings/usb4105.pdf) with the outer ground pads A1, A12, B1, B12 shortened 1.15 to 1.05 mm at the end "
+           "facing the 0.65 mm board-lock peg holes: hole to copper 0.29 mm instead of 0.19 mm, for a 0.25 mm fab minimum",
+           "USB C Type-C Receptacle SMD USB 2.0 16P 16C USB4105-15-A USB4105-GF-A peg clearance",
+           model="${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal.step")
+    for x in (-2.89, 2.89):                                # board-lock pegs: 0.50 mm bosses in 0.65 mm non-plated holes
+        f.pad("", "circle", (x, -2.605), (0.65, 0.65), drill=0.65, layers=["*.Cu", "*.Mask"])
+    outer, inner, y = (0.6, 1.15), (0.3, 1.15), -3.68
+    trimmed = (0.6, 1.05); y_trim = y - 0.05               # the cut end faces +y, where the peg holes are
+    for num, x, size in (("A1", -3.2, trimmed), ("A4", -2.4, outer), ("A5", -1.25, inner), ("A6", -0.25, inner), ("A7", 0.25, inner),
+                         ("A8", 1.25, inner), ("A9", 2.4, outer), ("A12", 3.2, trimmed), ("B1", 3.2, trimmed), ("B4", 2.4, outer),
+                         ("B5", 1.75, inner), ("B6", 0.75, inner), ("B7", -0.75, inner), ("B8", -1.75, inner), ("B9", -2.4, outer),
+                         ("B12", -3.2, trimmed)):
+        f.pad(num, "roundrect", (x, y_trim if size is trimmed else y), size)
+    for x in (-4.32, 4.32):                                # the shell's four legs: oval slots
+        for yy, h, dl in ((-3.105, 2.1, 1.7), (1.075, 1.8, 1.4)):
+            f.items.append(f'  (pad "SH" thru_hole oval (at {fmt(x)} {fmt(yy)}) (size 1 {fmt(h)}) (drill oval 0.6 {fmt(dl)}) '
+                           f'(layers "*.Cu" "*.Mask" "F.Paste") (uuid "{f.u()}"))')
+    for x in (-4.67, 4.67):
+        f.line((x, -0.1), (x, -1.8), "F.SilkS", 0.12)
+    f.line((5, 3.675), (-5, 3.675), "Dwgs.User", 0.1)
+    f.items.append(f'  (fp_text user "PCB Edge" (at 0 3.1 0) (layer "Dwgs.User") (uuid "{f.u()}") (effects (font (size 0.5 0.5) (thickness 0.1))))')
+    f.rect((-5.32, -4.76), (5.32, 4.18), "F.CrtYd", 0.05)
+    f.rect((-4.47, -3.675), (4.47, 3.675), "F.Fab", 0.1)
+    f.text(-5.5, 5, fab_ref_at=(0, 0), fab_size=1.0)
+    return f
+
+
+FOOTPRINTS = [m2_socket_e, fpc_te_1734248_15, onsemi_wdfn8, st_powerflat8, gct_usb4105_pegclear]
 
 
 def main(argv):
