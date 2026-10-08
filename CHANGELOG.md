@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6 (2026-10-07)
+
+- USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal_PegClear: the four
+  shell pads carry KiCad's `pad_prop_mechanical` property and the texts turn
+  with the part (`unlocked`), as in the library footprint, so the copy is
+  the original pad for pad in every field; the tags carry the stake-length
+  part numbers again. No pad geometry changes. (A verifier's finding.)
+
 ## 0.3.5 (2026-10-07)
 
 - calico.pretty gains USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal_PegClear:

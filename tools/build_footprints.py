@@ -59,13 +59,14 @@ class FP:
         s = "  (fp_poly (pts " + " ".join(f"(xy {fmt(x)} {fmt(y)})" for x, y in pts) + f') (stroke (width {fmt(width)}) (type solid)) (fill yes) (layer "{layer}") (uuid "{self.u()}"))'
         self.items.append(s)
 
-    def text(self, ref_y, val_y, fab_ref_at=(0, 0), fab_size=1.0):
+    def text(self, ref_y, val_y, fab_ref_at=(0, 0), fab_size=1.0, unlocked=False):
         eff = "(effects (font (size 1 1) (thickness 0.15)))"
-        self.items.insert(0, f'  (property "Reference" "REF**" (at 0 {fmt(ref_y)} 0) (layer "F.SilkS") (uuid "{self.u()}") {eff})')
-        self.items.insert(1, f'  (property "Value" "{self.name}" (at 0 {fmt(val_y)} 0) (layer "F.Fab") (uuid "{self.u()}") {eff})')
+        ul = " (unlocked yes)" if unlocked else ""                  # a text that turns with the part instead of staying upright
+        self.items.insert(0, f'  (property "Reference" "REF**" (at 0 {fmt(ref_y)} 0){ul} (layer "F.SilkS") (uuid "{self.u()}") {eff})')
+        self.items.insert(1, f'  (property "Value" "{self.name}" (at 0 {fmt(val_y)} 0){ul} (layer "F.Fab") (uuid "{self.u()}") {eff})')
         self.items.insert(2, f'  (property "Datasheet" "" (at 0 0 0) (layer "F.Fab") (hide yes) (uuid "{self.u()}") {eff})')
         self.items.insert(3, f'  (property "Description" "" (at 0 0 0) (layer "F.Fab") (hide yes) (uuid "{self.u()}") {eff})')
-        self.items.append(f'  (fp_text user "${{REFERENCE}}" (at {fmt(fab_ref_at[0])} {fmt(fab_ref_at[1])} 0) (layer "F.Fab") (uuid "{self.u()}") (effects (font (size {fmt(fab_size)} {fmt(fab_size)}) (thickness 0.15))))')
+        self.items.append(f'  (fp_text user "${{REFERENCE}}" (at {fmt(fab_ref_at[0])} {fmt(fab_ref_at[1])} 0){ul} (layer "F.Fab") (uuid "{self.u()}") (effects (font (size {fmt(fab_size)} {fmt(fab_size)}) (thickness 0.15))))')
 
     def dump(self):
         head = [f'(footprint "{self.name}"', "  (version 20241229)", '  (generator "calico-build-footprints")', '  (generator_version "10.0")',
@@ -198,7 +199,7 @@ def gct_usb4105_pegclear():
            "USB 2.0 Type C Receptacle, GCT USB4105, 16P, top mounted, horizontal, 5A: KiCad's footprint of GCT's recommended layout "
            "(https://gct.co/files/drawings/usb4105.pdf) with the outer ground pads A1, A12, B1, B12 shortened 1.15 to 1.05 mm at the end "
            "facing the 0.65 mm board-lock peg holes: hole to copper 0.29 mm instead of 0.19 mm, for a 0.25 mm fab minimum",
-           "USB C Type-C Receptacle SMD USB 2.0 16P 16C USB4105-15-A USB4105-GF-A peg clearance",
+           "USB C Type-C Receptacle SMD USB 2.0 16P 16C USB4105-15-A USB4105-15-A-060 USB4105-15-A-120 USB4105-GF-A USB4105-GF-A-060 USB4105-GF-A-120 peg clearance",
            model="${KICAD10_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal.step")
     for x in (-2.89, 2.89):                                # board-lock pegs: 0.50 mm bosses in 0.65 mm non-plated holes
         f.pad("", "circle", (x, -2.605), (0.65, 0.65), drill=0.65, layers=["*.Cu", "*.Mask"])
@@ -212,14 +213,14 @@ def gct_usb4105_pegclear():
     for x in (-4.32, 4.32):                                # the shell's four legs: oval slots
         for yy, h, dl in ((-3.105, 2.1, 1.7), (1.075, 1.8, 1.4)):
             f.items.append(f'  (pad "SH" thru_hole oval (at {fmt(x)} {fmt(yy)}) (size 1 {fmt(h)}) (drill oval 0.6 {fmt(dl)}) '
-                           f'(layers "*.Cu" "*.Mask" "F.Paste") (uuid "{f.u()}"))')
+                           f'(property pad_prop_mechanical) (layers "*.Cu" "*.Mask" "F.Paste") (uuid "{f.u()}"))')
     for x in (-4.67, 4.67):
         f.line((x, -0.1), (x, -1.8), "F.SilkS", 0.12)
     f.line((5, 3.675), (-5, 3.675), "Dwgs.User", 0.1)
-    f.items.append(f'  (fp_text user "PCB Edge" (at 0 3.1 0) (layer "Dwgs.User") (uuid "{f.u()}") (effects (font (size 0.5 0.5) (thickness 0.1))))')
+    f.items.append(f'  (fp_text user "PCB Edge" (at 0 3.1 0) (unlocked yes) (layer "Dwgs.User") (uuid "{f.u()}") (effects (font (size 0.5 0.5) (thickness 0.1))))')
     f.rect((-5.32, -4.76), (5.32, 4.18), "F.CrtYd", 0.05)
     f.rect((-4.47, -3.675), (4.47, 3.675), "F.Fab", 0.1)
-    f.text(-5.5, 5, fab_ref_at=(0, 0), fab_size=1.0)
+    f.text(-5.5, 5, fab_ref_at=(0, 0), fab_size=1.0, unlocked=True)   # KiCad's texts turn with the part, as the library's do
     return f
 
 
